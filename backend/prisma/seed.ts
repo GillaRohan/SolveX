@@ -1,0 +1,1229 @@
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+
+const prisma = new PrismaClient();
+
+async function main() {
+  console.log('🌱 Starting SolveX database seeding...');
+
+  // 1. Seed Demo Users for all roles
+  const passwordHash = await bcrypt.hash('DemoPass@123', 10);
+
+  const consumerUser = await prisma.user.upsert({
+    where: { email: 'consumer@solvex.in' },
+    update: {},
+    create: {
+      name: 'Priya Sharma',
+      email: 'consumer@solvex.in',
+      mobile: '+91 98765 43210',
+      passwordHash,
+      role: 'CONSUMER',
+      language: 'en',
+    },
+  });
+
+  const manufacturerUser = await prisma.user.upsert({
+    where: { email: 'manufacturer@solvex.in' },
+    update: {},
+    create: {
+      name: 'Rajesh Verma (AeroTech Appliances MSME)',
+      email: 'manufacturer@solvex.in',
+      mobile: '+91 91234 56789',
+      passwordHash,
+      role: 'MANUFACTURER',
+      language: 'en',
+    },
+  });
+
+  const studentUser = await prisma.user.upsert({
+    where: { email: 'student@solvex.in' },
+    update: {},
+    create: {
+      name: 'Ananya Deshmukh (IIT Roorkee)',
+      email: 'student@solvex.in',
+      mobile: '+91 99887 76655',
+      passwordHash,
+      role: 'STUDENT',
+      language: 'en',
+    },
+  });
+
+  const adminUser = await prisma.user.upsert({
+    where: { email: 'admin@solvex.in' },
+    update: {},
+    create: {
+      name: 'Dr. A. K. Sundaram (Director - BIS Technical Cell)',
+      email: 'admin@solvex.in',
+      mobile: '+91 94444 33221',
+      passwordHash,
+      role: 'ADMIN',
+      language: 'en',
+    },
+  });
+
+  console.log('✅ Seeded Users (Consumer, Manufacturer, Student, Admin)');
+
+  // 2. Seed Realistic Indian Standards (IS)
+  const standardsData = [
+    {
+      standardNumber: 'IS 302-2-15',
+      title: 'Safety of Household and Similar Electrical Appliances - Particular Requirements for Appliances for Heating Liquids (Electric Kettles)',
+      category: 'Electrical & Electronics',
+      description: 'Specifies safety requirements for electric household appliances for heating liquids, having rated voltage up to 250V, including electric kettles, coffee makers, and baby bottle warmers.',
+      scope: 'Covers domestic appliances for boiling liquids. Applies to cordless and corded kettles, steam cookers, and egg boilers. Emphasizes thermal cut-off, insulation, spill resistance, and dry-boil safety.',
+      status: 'ACTIVE',
+      version: '2023 (Third Revision)',
+      isMandatory: true,
+      qcoDate: '15 March 2024 (Mandatory QCO - Electrical Appliances)',
+      certificationScheme: 'Scheme I (ISI Mark)',
+      testingRequirements: 'Clause 8: Protection against electric shock; Clause 11: Heating under continuous operation; Clause 13: Leakage current and electric strength at operating temperature; Clause 19: Abnormal operation (dry boil test); Clause 22: Construction and cord anchorage.',
+      sourceUrl: 'https://standardsbis.bsbedge.com',
+      clauses: [
+        {
+          clauseNumber: 'Clause 8.1',
+          title: 'Protection against Electric Shock',
+          content: 'Appliances shall be constructed and enclosed so that there is adequate protection against accidental contact with live parts. Test finger probe B of IS 1401 applied with a force not exceeding 20 N.',
+          pageNumber: 12
+        },
+        {
+          clauseNumber: 'Clause 11.4',
+          title: 'Heating & Temperature Rise',
+          content: 'The appliance is operated until steady state. Temperature of handles, knobs, and enclosures shall not exceed permissible limits: metallic handles max 55°C, non-metallic handles max 75°C.',
+          pageNumber: 18
+        },
+        {
+          clauseNumber: 'Clause 19.4',
+          title: 'Abnormal Operation (Dry Boiling Test)',
+          content: 'Kettles operated without liquid until protective thermal cut-out operates. No flame, molten metal, or flammable gas emission allowed. Insulation resistance must remain above 2 Megaohms.',
+          pageNumber: 26
+        },
+        {
+          clauseNumber: 'Clause 22.11',
+          title: 'Cord Anchorage & Supply Connection',
+          content: 'Supply cord shall be provided with cord relief withstand 25 pulls of 60 N force without shifting more than 2 mm. Earthing continuity must not be compromised.',
+          pageNumber: 31
+        }
+      ]
+    },
+    {
+      standardNumber: 'IS 4151',
+      title: 'Protective Helmets for Two Wheeler Riders - Specification',
+      category: 'Mechanical & Automotive',
+      description: 'Lays down requirements regarding materials, construction, finish, mass and performance for protective helmets for drivers and passengers of two-wheeled motor vehicles.',
+      scope: 'Mandatory standard for all two-wheeler helmets manufactured or imported in India under the Motor Vehicles Act and BIS QCO. Protects against cranial trauma and penetrative impact.',
+      status: 'ACTIVE',
+      version: '2020 (Fourth Revision)',
+      isMandatory: true,
+      qcoDate: '01 June 2021 (Two Wheeler Helmet QCO)',
+      certificationScheme: 'Scheme I (ISI Mark)',
+      testingRequirements: 'Impact absorption test at ambient, hot, cold and water immersion conditions; Penetration resistance test; Retention system (chin strap) dynamic micro-slip and strength test; Peripheral vision angle (min 105 degrees).',
+      sourceUrl: 'https://standardsbis.bsbedge.com',
+      clauses: [
+        {
+          clauseNumber: 'Clause 6.1',
+          title: 'Impact Attenuation & Headform Deceleration',
+          content: 'Helmet dropped onto flat and hemispherical steel anvils at 7.5 m/s. Peak acceleration recorded by triaxial accelerometer inside magnesium alloy headform shall not exceed 300g.',
+          pageNumber: 8
+        },
+        {
+          clauseNumber: 'Clause 7.3',
+          title: 'Retention System (Chin Strap) Strength',
+          content: 'Dynamic test with falling 10 kg mass. Permanent elongation of strap shall not exceed 25 mm, and total displacement during shock must stay below 35 mm.',
+          pageNumber: 14
+        },
+        {
+          clauseNumber: 'Clause 8.4',
+          title: 'Maximum Mass Limit',
+          content: 'The maximum total mass of the helmet with all accessories and visor attached shall not exceed 1.20 kg for lightweight helmets (earlier 1.50 kg).',
+          pageNumber: 17
+        }
+      ]
+    },
+    {
+      standardNumber: 'IS 14543',
+      title: 'Packaged Drinking Water (Other than Packaged Natural Mineral Water) - Specification',
+      category: 'Food, Water & Agriculture',
+      description: 'Prescribes the requirements and methods of sampling and testing for packaged drinking water filled in sealed containers intended for direct human consumption.',
+      scope: 'Mandatory certification under FSSAI and BIS Act. Covers purification technologies: reverse osmosis, ozonation, UV treatment, and mineral remineralization.',
+      status: 'ACTIVE',
+      version: '2024',
+      isMandatory: true,
+      qcoDate: 'Mandatory under Food Safety and Standards Regulations & BIS Act',
+      certificationScheme: 'Scheme I (ISI Mark)',
+      testingRequirements: 'Physico-chemical: pH (6.5 to 8.5), Total Dissolved Solids (75 to 500 mg/L), Turbidity (<2 NTU). Microbiological: Total Coliform (Absent in 250ml), E.coli (Absent in 250ml), Pseudomonas aeruginosa (Absent in 250ml). Heavy metals and pesticide residues testing.',
+      sourceUrl: 'https://standardsbis.bsbedge.com',
+      clauses: [
+        {
+          clauseNumber: 'Clause 3.2',
+          title: 'Purification and Disinfection Processes',
+          content: 'Water shall be subjected to multi-stage filtration (sand, activated carbon, micron), demineralization, and terminal disinfection (ozonation / ultraviolet radiation).',
+          pageNumber: 5
+        },
+        {
+          clauseNumber: 'Clause 4.1',
+          title: 'Microbiological Limits',
+          content: 'Escherichia coli, Coliform bacteria, Faecal Streptococci, and Pseudomonas aeruginosa must be completely absent in 250 ml sample tested in duplicate.',
+          pageNumber: 9
+        },
+        {
+          clauseNumber: 'Clause 5.4',
+          title: 'Packaging & Tamper-Proof Sealing',
+          content: 'Containers must be food-grade PET or polycarbonate compliant with IS 10146, sealed with tamper-evident caps displaying batch number, ISI mark, and CM/L license.',
+          pageNumber: 15
+        }
+      ]
+    },
+    {
+      standardNumber: 'IS 16046 (Part 2)',
+      title: 'Secondary Cells and Batteries Containing Alkaline or Other Non-Acid Electrolytes - Secondary Lithium Cells and Batteries for Portable Applications',
+      category: 'Electronics & IT Goods',
+      description: 'Safety requirements for portable sealed secondary lithium cells and batteries (power banks, smartphones, laptops, IoT gadgets).',
+      scope: 'Mandatory under the Compulsory Registration Scheme (CRS) administered by MeitY and BIS. Essential for all consumer battery-powered electronics.',
+      status: 'ACTIVE',
+      version: '2018 / IEC 62133-2:2017',
+      isMandatory: true,
+      qcoDate: 'Electronics and Information Technology Goods (Requirement for Compulsory Registration) Order',
+      certificationScheme: 'Scheme II (Compulsory Registration Scheme - CRS)',
+      testingRequirements: 'Continuous charging at constant voltage; External short circuit test; Free fall drop test; Thermal abuse test (130°C for 30 min); Crush test; Overcharging and forced discharge testing.',
+      sourceUrl: 'https://www.crsbis.in',
+      clauses: [
+        {
+          clauseNumber: 'Clause 7.2.1',
+          title: 'Continuous Charging Test',
+          content: 'Fully charged cells subjected to continuous charge for 7 days at upper limit charging voltage. No fire, no explosion, no leakage allowed.',
+          pageNumber: 11
+        },
+        {
+          clauseNumber: 'Clause 7.3.2',
+          title: 'External Short Circuit (Cell & Battery)',
+          content: 'Cell short-circuited with total external resistance of 80 mΩ ± 20 mΩ at 55°C until case temp decreases. No explosion or fire permitted.',
+          pageNumber: 16
+        }
+      ]
+    },
+    {
+      standardNumber: 'IS 1417',
+      title: 'Gold and Gold Alloys, Jewellery/Artefacts - Fineness and Marking - Specification',
+      category: 'Gold & Hallmarking',
+      description: 'Prescribes the standards of fineness and marking requirements for gold jewellery and artefacts sold in India.',
+      scope: 'Mandatory hallmarking in over 343 districts of India. Enforces 6-digit alphanumeric HUID (Hallmark Unique Identification) laser engraved on every jewel.',
+      status: 'ACTIVE',
+      version: '2022',
+      isMandatory: true,
+      qcoDate: '01 June 2021 (Hallmarking of Gold Jewellery Order)',
+      certificationScheme: 'Hallmarking Scheme (HUID)',
+      testingRequirements: 'Fire Assay (Cupellation) as per IS 1418; X-ray Fluorescence (XRF) non-destructive screening; Purity grading: 14K (585), 18K (750), 20K (833), 22K (916), 23K (958), 24K (995).',
+      sourceUrl: 'https://www.manakonline.in',
+      clauses: [
+        {
+          clauseNumber: 'Clause 4.1',
+          title: 'Fineness Grades & Tolerances',
+          content: 'Standard fineness levels are 916 (22 karat), 750 (18 karat), 585 (14 karat). Negative tolerance on declared purity is strictly zero.',
+          pageNumber: 4
+        },
+        {
+          clauseNumber: 'Clause 6.2',
+          title: 'Components of Mandatory Hallmark',
+          content: 'Hallmark consists of three marks: BIS logo, Purity in Carats & Fineness (e.g. 22K916), and 6-digit alphanumeric HUID stamped by BIS recognized AHC.',
+          pageNumber: 7
+        }
+      ]
+    },
+    {
+      standardNumber: 'IS 2347',
+      title: 'Domestic Pressure Cookers - Specification',
+      category: 'Mechanical & Metallurgy',
+      description: 'Prescribes requirements for domestic pressure cookers made from aluminium alloys or stainless steel, designed for cooking food at internal pressures.',
+      scope: 'Mandatory standard under Domestic Pressure Cooker QCO. Covers safety valves, gasket release mechanisms, pressure regulation, and burst resistance.',
+      status: 'ACTIVE',
+      version: '2017 (Sixth Revision)',
+      isMandatory: true,
+      qcoDate: '01 Feb 2021 (Domestic Pressure Cookers Quality Control Order)',
+      certificationScheme: 'Scheme I (ISI Mark)',
+      testingRequirements: 'Proof pressure test (withstand twice operating pressure); Bursting test (minimum 3 times normal pressure); Safety vent device operating pressure; Gasket release safety mechanism test; Thermal shock resistance.',
+      sourceUrl: 'https://standardsbis.bsbedge.com',
+      clauses: [
+        {
+          clauseNumber: 'Clause 5.1',
+          title: 'Material Specifications',
+          content: 'Body and lid shall be manufactured from food grade stainless steel (IS 6911 grade 304) or aluminium alloy sheet (IS 21). Gaskets shall be food-grade vulcanized rubber (IS 7466).',
+          pageNumber: 6
+        },
+        {
+          clauseNumber: 'Clause 8.3',
+          title: 'Pressure Relief Mechanisms',
+          content: 'Cooker must be fitted with at least two independent safety devices: a weight/spring vent weight and a secondary fusible safety plug or spring-loaded valve.',
+          pageNumber: 11
+        }
+      ]
+    },
+    {
+      standardNumber: 'IS 9873 (Part 1)',
+      title: 'Safety of Toys - Part 1: Safety Aspects Related to Mechanical and Physical Properties',
+      category: 'Toys & Children Products',
+      description: 'Specifies acceptable criteria for the structural characteristics of toys, such as shape, size, contour, spacing, and hazard prevention (small parts, sharp edges).',
+      scope: 'Mandatory under Toys (Quality Control) Order. Mandatory for all domestic manufacturers and importers of toys intended for children under 14 years.',
+      status: 'ACTIVE',
+      version: '2019',
+      isMandatory: true,
+      qcoDate: '01 January 2021 (Toys Quality Control Order)',
+      certificationScheme: 'Scheme I (ISI Mark)',
+      testingRequirements: 'Small parts test cylinder for choking hazard; Sharp edges and points assessment; Drop test; Tension test; Torque test; Impact test; Flammability test as per Part 2; Heavy metals migration test as per Part 3.',
+      sourceUrl: 'https://standardsbis.bsbedge.com',
+      clauses: [
+        {
+          clauseNumber: 'Clause 4.4',
+          title: 'Small Parts Choking Hazards (< 36 Months)',
+          content: 'Toys intended for children under 3 years shall not fit entirely within the small parts cylinder of 31.7 mm diameter and 57.1 mm truncated angle depth.',
+          pageNumber: 8
+        },
+        {
+          clauseNumber: 'Clause 4.7',
+          title: 'Sharp Edges and Points',
+          content: 'Accessible edges of toys shall not present an unreasonable risk of injury when tested with sharp edge tester as per ISO 8124-1.',
+          pageNumber: 13
+        }
+      ]
+    },
+    {
+      standardNumber: 'IS 16102 (Part 1)',
+      title: 'Self-Ballasted LED Lamps for General Lighting Services - Safety Requirements',
+      category: 'Electrical & Electronics',
+      description: 'Specifies safety and interchangeability requirements for self-ballasted LED lamps for general lighting purposes having rated wattage up to 60W.',
+      scope: 'Mandatory under CRS and Energy Efficiency norms. Protects consumers against insulation breakdown, fire hazards, and radio frequency interference.',
+      status: 'ACTIVE',
+      version: '2012',
+      isMandatory: true,
+      qcoDate: 'Electronics and IT Goods CRS Order',
+      certificationScheme: 'Scheme II (Compulsory Registration Scheme - CRS)',
+      testingRequirements: 'Cap temperature rise test; Insulation resistance and electric strength test; Mechanical strength (torsion resistance of lamp cap); Fault condition test; Creepage distance and clearances.',
+      sourceUrl: 'https://www.crsbis.in',
+      clauses: [
+        {
+          clauseNumber: 'Clause 6.1',
+          title: 'Marking Requirements',
+          content: 'Lamps must legibly display: Manufacturer brand, rated wattage, rated voltage, frequency, origin, and standard BIS CRS registration logo with R-number.',
+          pageNumber: 4
+        },
+        {
+          clauseNumber: 'Clause 8.1',
+          title: 'Insulation Resistance & Dielectric Strength',
+          content: 'Insulation resistance between current-carrying parts and accessible parts shall not be less than 4 MΩ when tested with 500V DC.',
+          pageNumber: 7
+        }
+      ]
+    }
+  ];
+
+  for (const std of standardsData) {
+    const { clauses, ...stdProps } = std;
+    const createdStandard = await prisma.standard.upsert({
+      where: { standardNumber: stdProps.standardNumber },
+      update: stdProps,
+      create: stdProps,
+    });
+
+    for (const cl of clauses) {
+      await prisma.standardClause.create({
+        data: {
+          standardId: createdStandard.id,
+          clauseNumber: cl.clauseNumber,
+          title: cl.title,
+          content: cl.content,
+          pageNumber: cl.pageNumber
+        }
+      });
+    }
+  }
+
+  console.log(`✅ Seeded ${standardsData.length} Indian Standards with full clauses`);
+
+  // 3. Seed Laboratories across India
+  const laboratoriesData = [
+    // ==================== BIS OWN LABORATORIES ====================
+    {
+      name: 'BIS Central Laboratory (CL)',
+      location: 'Sahibabad, Ghaziabad',
+      state: 'Uttar Pradesh',
+      capabilities: 'Electrical, Electronics, Mechanical, Chemical, Microbiology, Food Testing, Textile, Cement, Gold Assay',
+      standardsCovered: 'IS 302-2-15, IS 4151, IS 14543, IS 2347, IS 16046, IS 9873, IS 16102, IS 1417, IS 383, IS 269',
+      contactEmail: 'cl@bis.gov.in',
+      contactPhone: '+91 120 277 8444',
+      address: 'Plot No. 20/9, Site IV, Sahibabad Industrial Area, Ghaziabad - 201010',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Western Regional Office Laboratory (WROL)',
+      location: 'Mumbai',
+      state: 'Maharashtra',
+      capabilities: 'Household Appliances, Chemicals, Gold Assay & Hallmarking, Plastics, Mechanical, Packaged Water',
+      standardsCovered: 'IS 302-2-15, IS 1417, IS 2347, IS 4151, IS 14543, IS 9873',
+      contactEmail: 'wrol@bis.gov.in',
+      contactPhone: '+91 22 2832 9295',
+      address: 'Manakalaya, E9, MIDC, Behind Marol Telephone Exchange, Andheri (East), Mumbai - 400093',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Southern Regional Office Laboratory (SROL)',
+      location: 'Chennai',
+      state: 'Tamil Nadu',
+      capabilities: 'Electronics, Automotive Safety, Packaged Water, Civil Construction Materials, Food Testing',
+      standardsCovered: 'IS 4151, IS 14543, IS 16046, IS 16102, IS 302-2-15, IS 2347',
+      contactEmail: 'srol@bis.gov.in',
+      contactPhone: '+91 44 2254 1442',
+      address: 'CIT Campus, IV Cross Road, Taramani, Chennai - 600113',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Eastern Regional Office Laboratory (EROL)',
+      location: 'Kolkata',
+      state: 'West Bengal',
+      capabilities: 'Metallurgy, Steel & Pressure Vessels, Food Products, Electrical Cables, Cement, Jute Products',
+      standardsCovered: 'IS 2347, IS 14543, IS 302-2-15, IS 9873, IS 269, IS 1786',
+      contactEmail: 'erol@bis.gov.in',
+      contactPhone: '+91 33 2355 3243',
+      address: '1/14 C.I.T. Scheme VII M, V.I.P. Road, Kankurgachi, Kolkata - 700054',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Northern Regional Office Laboratory (NROL)',
+      location: 'Chandigarh',
+      state: 'Punjab',
+      capabilities: 'Mechanical, Electrical, Chemical, Food Testing, Steel, Plywood',
+      standardsCovered: 'IS 302-2-15, IS 2347, IS 14543, IS 4151, IS 303, IS 710',
+      contactEmail: 'nrol@bis.gov.in',
+      contactPhone: '+91 172 260 9769',
+      address: 'SCO 335-336, Sector 34-A, Chandigarh - 160022',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    // ==================== BIS BRANCH OFFICE LABORATORIES ====================
+    {
+      name: 'BIS Branch Office Laboratory - Jaipur',
+      location: 'Jaipur',
+      state: 'Rajasthan',
+      capabilities: 'Gold Assay & Hallmarking, Cement, Food, Electrical Accessories',
+      standardsCovered: 'IS 1417, IS 269, IS 14543, IS 302-2-15',
+      contactEmail: 'bo-jaipur@bis.gov.in',
+      contactPhone: '+91 141 222 0471',
+      address: 'V-11, Shyam Nagar, Sodala, Jaipur - 302019',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Branch Office Laboratory - Lucknow',
+      location: 'Lucknow',
+      state: 'Uttar Pradesh',
+      capabilities: 'Food Products, Packaged Water, Electrical, Cement, Steel',
+      standardsCovered: 'IS 14543, IS 302-2-15, IS 269, IS 1786, IS 2347',
+      contactEmail: 'bo-lucknow@bis.gov.in',
+      contactPhone: '+91 522 271 5252',
+      address: 'C-1103, Indira Nagar, Lucknow - 226016',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Branch Office Laboratory - Pune',
+      location: 'Pune',
+      state: 'Maharashtra',
+      capabilities: 'Automotive Components, Mechanical, Steel, Plastics, Chemical',
+      standardsCovered: 'IS 4151, IS 2347, IS 302-2-15, IS 9873, IS 14543',
+      contactEmail: 'bo-pune@bis.gov.in',
+      contactPhone: '+91 20 2567 0107',
+      address: '2nd Floor, Nirmal Building, F.C. Road, Pune - 411004',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Branch Office Laboratory - Ahmedabad',
+      location: 'Ahmedabad',
+      state: 'Gujarat',
+      capabilities: 'Chemical, Food, Textile, Cement, Electrical, Gold Assay',
+      standardsCovered: 'IS 14543, IS 302-2-15, IS 1417, IS 269, IS 2347',
+      contactEmail: 'bo-ahmedabad@bis.gov.in',
+      contactPhone: '+91 79 2754 0870',
+      address: 'Kalp Avani Building, University Road, Ahmedabad - 380015',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Branch Office Laboratory - Bengaluru',
+      location: 'Bengaluru',
+      state: 'Karnataka',
+      capabilities: 'Electronics, IT Products, Electrical, Gold Hallmarking, Food Testing',
+      standardsCovered: 'IS 16046, IS 16102, IS 302-2-15, IS 1417, IS 14543',
+      contactEmail: 'bo-bengaluru@bis.gov.in',
+      contactPhone: '+91 80 2558 8815',
+      address: '2nd Floor, Unity Building, J.C. Road, Bengaluru - 560002',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Branch Office Laboratory - Hyderabad',
+      location: 'Hyderabad',
+      state: 'Telangana',
+      capabilities: 'Electrical, Electronics, Cement, Food, Chemical',
+      standardsCovered: 'IS 302-2-15, IS 16046, IS 269, IS 14543, IS 2347',
+      contactEmail: 'bo-hyderabad@bis.gov.in',
+      contactPhone: '+91 40 2789 0261',
+      address: 'Harmony Building, Basheerbagh, Hyderabad - 500004',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Branch Office Laboratory - Bhopal',
+      location: 'Bhopal',
+      state: 'Madhya Pradesh',
+      capabilities: 'Cement, Steel, Food Products, Electrical Accessories, Packaged Water',
+      standardsCovered: 'IS 269, IS 1786, IS 14543, IS 302-2-15, IS 2347',
+      contactEmail: 'bo-bhopal@bis.gov.in',
+      contactPhone: '+91 755 255 7611',
+      address: 'Manisha Market Complex, M.P. Nagar Zone-II, Bhopal - 462011',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Branch Office Laboratory - Patna',
+      location: 'Patna',
+      state: 'Bihar',
+      capabilities: 'Food Testing, Packaged Water, Cement, Steel, Gold Assay',
+      standardsCovered: 'IS 14543, IS 269, IS 1786, IS 1417, IS 302-2-15',
+      contactEmail: 'bo-patna@bis.gov.in',
+      contactPhone: '+91 612 222 3810',
+      address: 'A/3, P.C. Colony, Kankarbagh, Patna - 800020',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Branch Office Laboratory - Guwahati',
+      location: 'Guwahati',
+      state: 'Assam',
+      capabilities: 'Food Products, Packaged Water, Cement, Plywood, Steel',
+      standardsCovered: 'IS 14543, IS 269, IS 710, IS 1786, IS 302-2-15',
+      contactEmail: 'bo-guwahati@bis.gov.in',
+      contactPhone: '+91 361 254 9682',
+      address: 'Lamb Road, Ambari, Guwahati - 781001',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Branch Office Laboratory - Thiruvananthapuram',
+      location: 'Thiruvananthapuram',
+      state: 'Kerala',
+      capabilities: 'Food Testing, Spice Analysis, Packaged Water, Electrical, Rubber Products',
+      standardsCovered: 'IS 14543, IS 302-2-15, IS 2347, IS 1417, IS 9873',
+      contactEmail: 'bo-tvpm@bis.gov.in',
+      contactPhone: '+91 471 233 0489',
+      address: 'TC-14/1723, Pattom, Thiruvananthapuram - 695004',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'BIS Branch Office Laboratory - Dehradun',
+      location: 'Dehradun',
+      state: 'Uttarakhand',
+      capabilities: 'Packaged Water, Cement, Steel, Electrical, Food Products',
+      standardsCovered: 'IS 14543, IS 269, IS 302-2-15, IS 1786, IS 2347',
+      contactEmail: 'bo-dehradun@bis.gov.in',
+      contactPhone: '+91 135 271 4482',
+      address: 'Hotel Softel Nutan Plaza Building, Rajpur Road, Dehradun - 248001',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    // ==================== NATIONAL TEST HOUSE (NTH) ====================
+    {
+      name: 'National Test House (NTH) - Kolkata (HQ)',
+      location: 'Kolkata',
+      state: 'West Bengal',
+      capabilities: 'Mechanical, Chemical, Electrical, NDT, Environmental, Calibration, Metallurgy, Rubber, Paper',
+      standardsCovered: 'IS 302-2-15, IS 2347, IS 9873, IS 16046, IS 4151, IS 1786, IS 269',
+      contactEmail: 'nthmain@nic.in',
+      contactPhone: '+91 33 2321 3415',
+      address: 'Kyd Street (Dr. Meghnad Saha Sarani), Kolkata - 700016',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'National Test House (NTH) - Northern Region',
+      location: 'Ghaziabad',
+      state: 'Uttar Pradesh',
+      capabilities: 'Physical, Chemical, NDT, Environmental, Toy Safety, High Voltage Testing, Footwear',
+      standardsCovered: 'IS 9873, IS 16046, IS 302-2-15, IS 4151, IS 2347',
+      contactEmail: 'nthnr-ca@nic.in',
+      contactPhone: '+91 120 278 9851',
+      address: 'Kamla Nehru Nagar, Ghaziabad - 201002',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'National Test House (NTH) - Western Region',
+      location: 'Mumbai',
+      state: 'Maharashtra',
+      capabilities: 'Electrical, Chemical, Mechanical, Environmental Testing, Textiles, Plastics',
+      standardsCovered: 'IS 302-2-15, IS 2347, IS 14543, IS 9873, IS 4151',
+      contactEmail: 'nthwr@nic.in',
+      contactPhone: '+91 22 2411 6825',
+      address: 'V. N. Purav Marg, Sion, Mumbai - 400022',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'National Test House (NTH) - Southern Region',
+      location: 'Chennai',
+      state: 'Tamil Nadu',
+      capabilities: 'Mechanical, Electrical, Chemical, Leather Testing, Rubber, Calibration',
+      standardsCovered: 'IS 302-2-15, IS 4151, IS 2347, IS 14543, IS 16046',
+      contactEmail: 'nthsr@nic.in',
+      contactPhone: '+91 44 2235 3361',
+      address: 'CSIR Complex, Taramani, Chennai - 600113',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'National Test House (NTH) - Jaipur',
+      location: 'Jaipur',
+      state: 'Rajasthan',
+      capabilities: 'Gems & Jewellery Testing, Electrical, Chemical, Construction Materials, Calibration',
+      standardsCovered: 'IS 1417, IS 269, IS 302-2-15, IS 2347, IS 14543',
+      contactEmail: 'nthjpr@nic.in',
+      contactPhone: '+91 141 274 0282',
+      address: 'Ramchandrapura Industrial Area, Jaipur - 302012',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'National Test House (NTH) - Guwahati',
+      location: 'Guwahati',
+      state: 'Assam',
+      capabilities: 'Chemical, Food Products, Construction Materials, Electrical, Calibration',
+      standardsCovered: 'IS 14543, IS 269, IS 302-2-15, IS 2347, IS 1786',
+      contactEmail: 'nthgwh@nic.in',
+      contactPhone: '+91 361 245 7391',
+      address: 'Amingaon, North Guwahati - 781031',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    // ==================== GOVERNMENT RECOGNIZED TESTING INSTITUTIONS ====================
+    {
+      name: 'ARAI - Automotive Research Association of India',
+      location: 'Pune',
+      state: 'Maharashtra',
+      capabilities: 'Automotive Safety, Crash Testing, Helmet Testing, Vehicle Homologation, Emission Testing',
+      standardsCovered: 'IS 4151, IS 2553, IS 11059, AIS Standards, IS 8802',
+      contactEmail: 'info@araiindia.com',
+      contactPhone: '+91 20 3023 1101',
+      address: 'Survey No. 102, Vetal Hill, Off Paud Road, Kothrud, Pune - 411038',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'CPRI - Central Power Research Institute (Bengaluru)',
+      location: 'Bengaluru',
+      state: 'Karnataka',
+      capabilities: 'High Voltage Testing, Power Transformers, Switchgear, Cables, Circuit Breakers, Insulators',
+      standardsCovered: 'IS 2026, IS 3156, IS 694, IS 13947, IS 302-2-15, IS 16102',
+      contactEmail: 'cpri@cpri.in',
+      contactPhone: '+91 80 2360 2234',
+      address: 'Professor Sir C.V. Raman Road, Sadashivanagar, Bengaluru - 560080',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'CPRI - Central Power Research Institute (Bhopal Unit)',
+      location: 'Bhopal',
+      state: 'Madhya Pradesh',
+      capabilities: 'Short Circuit Testing, Power Equipment, Transformers, High Voltage Testing',
+      standardsCovered: 'IS 2026, IS 3156, IS 694, IS 13947, IS 302-2-15',
+      contactEmail: 'cpri-bhopal@cpri.in',
+      contactPhone: '+91 755 258 2811',
+      address: 'Unit No. 5, Plot No. 9 & 10, Govindpura Industrial Area, Bhopal - 462023',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'CFTRI - Central Food Technological Research Institute',
+      location: 'Mysuru',
+      state: 'Karnataka',
+      capabilities: 'Food Testing, Nutritional Analysis, Microbiological Testing, Shelf-Life Studies, Packaged Food Compliance',
+      standardsCovered: 'IS 14543, IS 7101, IS 1528, IS 4162, IS 2347',
+      contactEmail: 'director@cftri.res.in',
+      contactPhone: '+91 821 251 4534',
+      address: 'CSIR-CFTRI Campus, Cheluvamba Mansion, Mysuru - 570020',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'CSIR-NPL - National Physical Laboratory',
+      location: 'New Delhi',
+      state: 'Delhi',
+      capabilities: 'Calibration, Metrology, Physical Standards, Electrical Standards, Time & Frequency, Temperature',
+      standardsCovered: 'IS 5765, IS 13979, IS 4905, IS 14543, Calibration Standards',
+      contactEmail: 'info@nplindia.org',
+      contactPhone: '+91 11 4560 9212',
+      address: 'Dr. K.S. Krishnan Marg, New Delhi - 110012',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'CIPET - Central Institute of Petrochemicals Engineering & Technology (Chennai)',
+      location: 'Chennai',
+      state: 'Tamil Nadu',
+      capabilities: 'Plastics & Polymer Testing, Rubber, Pipe Testing, PET Bottles, Packaging Materials',
+      standardsCovered: 'IS 10146, IS 4984, IS 12235, IS 14151, IS 14543',
+      contactEmail: 'cipetchennai@cipet.gov.in',
+      contactPhone: '+91 44 2225 4618',
+      address: 'TV Koil, Guindy, Chennai - 600032',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'CIPET - Central Institute of Petrochemicals Engineering & Technology (Ahmedabad)',
+      location: 'Ahmedabad',
+      state: 'Gujarat',
+      capabilities: 'Plastics Testing, Polymer Analysis, Pipe & Fittings, Food Grade Plastic Certification',
+      standardsCovered: 'IS 10146, IS 4984, IS 12235, IS 14543, IS 14151',
+      contactEmail: 'cipetahd@cipet.gov.in',
+      contactPhone: '+91 79 2297 1467',
+      address: 'Near GIDC, Vatva, Ahmedabad - 382445',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'ICAT - International Centre for Automotive Technology',
+      location: 'Manesar, Gurugram',
+      state: 'Haryana',
+      capabilities: 'Automotive Homologation, Vehicle Safety, Crash Testing, Emission Testing, Helmet Impact Testing',
+      standardsCovered: 'IS 4151, IS 2553, IS 11059, AIS Standards, IS 8802',
+      contactEmail: 'info@icat.in',
+      contactPhone: '+91 124 294 7200',
+      address: 'IMT Manesar, Gurugram - 122052, Haryana',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'ERTL (East) - Electronic Regional Test Laboratory',
+      location: 'Kolkata',
+      state: 'West Bengal',
+      capabilities: 'Electronics Testing, IT Product Testing, EMC/EMI, CRS Registration Testing, LED Testing',
+      standardsCovered: 'IS 16046, IS 16102, IS 302-2-15, IS 13252, CRS Standards',
+      contactEmail: 'ertleast@ertl.gov.in',
+      contactPhone: '+91 33 2335 7670',
+      address: 'DN Block, Sector V, Salt Lake City, Kolkata - 700091',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'ERTL (South) - Electronic Regional Test Laboratory',
+      location: 'Thiruvananthapuram',
+      state: 'Kerala',
+      capabilities: 'Electronics Testing, CRS Registration, IT Products, LED & Lighting, Safety Testing',
+      standardsCovered: 'IS 16046, IS 16102, IS 302-2-15, IS 13252, CRS Standards',
+      contactEmail: 'ertlsouth@ertl.gov.in',
+      contactPhone: '+91 471 234 2294',
+      address: 'Kinfra Techno Industrial Park, Kazhakoottam, Thiruvananthapuram - 695585',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'ERTL (North) - Electronic Regional Test Laboratory',
+      location: 'New Delhi',
+      state: 'Delhi',
+      capabilities: 'Electronics Testing, EMC/EMI, Safety Testing, CRS Registration, IT Products',
+      standardsCovered: 'IS 16046, IS 16102, IS 302-2-15, IS 13252, CRS Standards',
+      contactEmail: 'ertlnorth@stqc.gov.in',
+      contactPhone: '+91 11 2436 3089',
+      address: 'STQC Directorate, Electronics Niketan, CGO Complex, New Delhi - 110003',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'ERTL (West) - Electronic Regional Test Laboratory',
+      location: 'Mumbai',
+      state: 'Maharashtra',
+      capabilities: 'Electronics Testing, EMC/EMI, CRS Registration, Safety Testing, Medical Electronics',
+      standardsCovered: 'IS 16046, IS 16102, IS 302-2-15, IS 13252, CRS Standards',
+      contactEmail: 'ertlwest@stqc.gov.in',
+      contactPhone: '+91 22 2836 9012',
+      address: 'STQC IT Centre, University of Mumbai Campus, Vidyanagari, Mumbai - 400098',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    // ==================== MAJOR PRIVATE ACCREDITED LABS ====================
+    {
+      name: 'TÜV SÜD South Asia Pvt. Ltd.',
+      location: 'Bengaluru',
+      state: 'Karnataka',
+      capabilities: 'Lithium Battery Testing, EMC/EMI, Wireless & Telecom, Household Appliances, Solar PV',
+      standardsCovered: 'IS 16046 (Part 2), IS 16102, IS 302-2-15, IS 14286',
+      contactEmail: 'info.in@tuvsud.com',
+      contactPhone: '+91 80 6754 9000',
+      address: 'No. A-151, 2nd Stage, Peenya Industrial Area, Bengaluru - 560058',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'TÜV SÜD South Asia Pvt. Ltd. (Pune)',
+      location: 'Pune',
+      state: 'Maharashtra',
+      capabilities: 'Automotive Testing, Mechanical, Pressure Equipment, Industrial Components',
+      standardsCovered: 'IS 4151, IS 2347, IS 2062, IS 302-2-15',
+      contactEmail: 'info.in@tuvsud.com',
+      contactPhone: '+91 20 6709 2000',
+      address: 'Kalyani Nagar, Pune - 411006',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'UL India Pvt. Ltd. (Bengaluru)',
+      location: 'Bengaluru',
+      state: 'Karnataka',
+      capabilities: 'Photovoltaics, Battery Safety, IT Equipment, Lighting, Wire & Cable, Medical Devices',
+      standardsCovered: 'IS 16046, IS 16102, IS 302-2-15, IS 694',
+      contactEmail: 'bengaluru.lab@ul.com',
+      contactPhone: '+91 80 4138 4400',
+      address: 'No. 157/5, Devarabisanahalli Village, Varthur Hobli, Bengaluru - 560103',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'UL India Pvt. Ltd. (Gurugram)',
+      location: 'Gurugram',
+      state: 'Haryana',
+      capabilities: 'Appliance Testing, Fire Safety, Wire & Cable, IT Equipment, EMC Testing',
+      standardsCovered: 'IS 302-2-15, IS 16046, IS 16102, IS 694',
+      contactEmail: 'gurugram.lab@ul.com',
+      contactPhone: '+91 124 473 2400',
+      address: 'Plot No. 385, Udyog Vihar Phase III, Gurugram - 122016',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'Shriram Institute for Industrial Research (SRI)',
+      location: 'New Delhi',
+      state: 'Delhi',
+      capabilities: 'Analytical Chemistry, Environmental Testing, Petroleum Products, Rubber, Leather, Food',
+      standardsCovered: 'IS 14543, IS 2347, IS 9873, IS 302-2-15, IS 1417',
+      contactEmail: 'contact@shriraminstitute.org',
+      contactPhone: '+91 11 2592 1426',
+      address: '19, University Road, Delhi - 110007',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'SGS India Pvt. Ltd.',
+      location: 'Gurugram',
+      state: 'Haryana',
+      capabilities: 'Consumer Products, Hardlines, Textiles, Food, Electrical Safety, Chemical Analysis',
+      standardsCovered: 'IS 9873, IS 302-2-15, IS 14543, IS 16046, IS 2347',
+      contactEmail: 'sgs.india@sgs.com',
+      contactPhone: '+91 124 678 4000',
+      address: 'Plot No. 6, Sector 44, Institutional Area, Gurugram - 122003',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'Bureau Veritas Consumer Products Services (India)',
+      location: 'Mumbai',
+      state: 'Maharashtra',
+      capabilities: 'Consumer Products, Toys, Electrical Appliances, Textiles, Softlines',
+      standardsCovered: 'IS 9873, IS 302-2-15, IS 16046, IS 14543',
+      contactEmail: 'bvcps.mumbai@bureauveritas.com',
+      contactPhone: '+91 22 4092 8300',
+      address: '6th Floor, Marwah Centre, Krishanlal Marwah Marg, Andheri East, Mumbai - 400072',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'Intertek India Pvt. Ltd.',
+      location: 'Bengaluru',
+      state: 'Karnataka',
+      capabilities: 'Electrical Safety, EMC/EMI, Performance Testing, Chemical Analysis, Consumer Products',
+      standardsCovered: 'IS 302-2-15, IS 16046, IS 16102, IS 9873',
+      contactEmail: 'india.enquiry@intertek.com',
+      contactPhone: '+91 80 4168 1100',
+      address: '90, HAL 2nd Stage, Indiranagar, Bengaluru - 560038',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'QCI-NABET Recognized Lab - Spectro Analytical Labs Ltd.',
+      location: 'New Delhi',
+      state: 'Delhi',
+      capabilities: 'Environmental Testing, Water Testing, Air Quality, Food Safety, Soil Analysis',
+      standardsCovered: 'IS 14543, IS 10500, IS 2296, IS 3025',
+      contactEmail: 'info@spectrogroup.com',
+      contactPhone: '+91 11 4356 1616',
+      address: 'A-12, Industrial Area, Mayapuri Phase-I, New Delhi - 110064',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: false,
+    },
+    {
+      name: 'NABL Accredited - Vimta Labs Ltd.',
+      location: 'Hyderabad',
+      state: 'Telangana',
+      capabilities: 'Pharmaceuticals, Food Testing, Environmental, Bioanalytical, Clinical Research',
+      standardsCovered: 'IS 14543, IS 7101, IS 4162, IS 2347',
+      contactEmail: 'business@vimta.com',
+      contactPhone: '+91 40 4344 4999',
+      address: '142, IDA Phase-II, Cherlapally, Hyderabad - 500051',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: false,
+    },
+    {
+      name: 'ETDC - Electronics Test & Development Centre (Bengaluru)',
+      location: 'Bengaluru',
+      state: 'Karnataka',
+      capabilities: 'Electronics Product Testing, EMI/EMC, Safety Testing, IT Equipment, Telecom Products',
+      standardsCovered: 'IS 16046, IS 16102, IS 302-2-15, IS 13252, CRS Standards',
+      contactEmail: 'etdcblr@stqc.gov.in',
+      contactPhone: '+91 80 2839 5067',
+      address: 'C.V. Raman Nagar, Bengaluru - 560093',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+    {
+      name: 'NABL Accredited - Geo-Chem Laboratories Pvt. Ltd.',
+      location: 'Mumbai',
+      state: 'Maharashtra',
+      capabilities: 'Food Testing, Water Analysis, Chemical Analysis, Environmental Testing, Petroleum',
+      standardsCovered: 'IS 14543, IS 10500, IS 7101, IS 4162',
+      contactEmail: 'mumbai@geochem.co.in',
+      contactPhone: '+91 22 2825 7252',
+      address: 'K-16, MIDC, TTC Industrial Area, Navi Mumbai - 400710',
+      isRecommended: false,
+      isNablAccredited: true,
+      isBisRecognized: false,
+    },
+    {
+      name: 'BIS Recognized - ERDA (Electrical Research & Development Association)',
+      location: 'Vadodara',
+      state: 'Gujarat',
+      capabilities: 'High Voltage Testing, Power Transformers, Switchgear, Motors, Cables, Circuit Breakers',
+      standardsCovered: 'IS 2026, IS 3156, IS 694, IS 13947, IS 302-2-15, IS 16102',
+      contactEmail: 'erda@erdaindia.org',
+      contactPhone: '+91 265 263 8103',
+      address: 'Makarpura GIDC, Vadodara - 390010',
+      isRecommended: true,
+      isNablAccredited: true,
+      isBisRecognized: true,
+    },
+  ];
+
+  for (const lab of laboratoriesData) {
+    await prisma.laboratory.create({ data: lab });
+  }
+
+  console.log(`✅ Seeded ${laboratoriesData.length} Testing Laboratories`);
+
+  // 4. Seed Product Verification DB (for camera scanner & manual verification)
+  const productVerifications = [
+    {
+      licenceNumber: 'CM/L-8400192',
+      brand: 'Prestige Delight',
+      manufacturer: 'TTK Prestige Limited',
+      model: 'PKOSS 1.5L Stainless Steel Electric Kettle',
+      standardNumber: 'IS 302-2-15',
+      productCategory: 'Electrical Appliances',
+      status: 'OPERATIVE',
+      validUntil: '2027-11-30',
+      verificationType: 'ISI_MARK',
+      factoryLocation: 'Hosur, Tamil Nadu',
+    },
+    {
+      licenceNumber: 'CM/L-7123984',
+      brand: 'Vega Cliff',
+      manufacturer: 'Vega Auto Accessories Pvt. Ltd.',
+      model: 'Full Face Motorcycle Helmet (ISI Certified)',
+      standardNumber: 'IS 4151',
+      productCategory: 'Automotive Safety',
+      status: 'OPERATIVE',
+      validUntil: '2026-08-15',
+      verificationType: 'ISI_MARK',
+      factoryLocation: 'Belagavi, Karnataka',
+    },
+    {
+      licenceNumber: 'CM/L-1234567',
+      brand: 'Bisleri Mountain Rock',
+      manufacturer: 'Bisleri International Pvt Ltd',
+      model: 'Packaged Drinking Water 1 Litre PET Bottle',
+      standardNumber: 'IS 14543',
+      productCategory: 'Food & Beverage',
+      status: 'OPERATIVE',
+      validUntil: '2028-05-10',
+      verificationType: 'ISI_MARK',
+      factoryLocation: 'Andheri East, Mumbai',
+    },
+    {
+      licenceNumber: 'R-41098765',
+      brand: 'Mi Power Pro',
+      manufacturer: 'Navitas Green Power Solutions / Xiaomi India',
+      model: '20000mAh 18W Fast Charging Power Bank',
+      standardNumber: 'IS 16046 (Part 2)',
+      productCategory: 'Electronics & IT',
+      status: 'OPERATIVE',
+      validUntil: '2026-12-31',
+      verificationType: 'CRS_REGISTRATION',
+      factoryLocation: 'Sri City, Andhra Pradesh',
+    },
+    {
+      licenceNumber: 'HUID-A92B74',
+      brand: 'Tanishq Mia',
+      manufacturer: 'Titan Company Limited',
+      model: '22K (916) Pure Gold Floral Bangle (14.2 g)',
+      standardNumber: 'IS 1417',
+      productCategory: 'Precious Metals',
+      status: 'OPERATIVE',
+      validUntil: 'Perpetual',
+      verificationType: 'HALLMARK_HUID',
+      factoryLocation: 'BIS Assaying & Hallmarking Centre, Bengaluru (AHC-042)',
+    },
+    {
+      licenceNumber: 'CM/L-9988776',
+      brand: 'Hawkins Classic',
+      manufacturer: 'Hawkins Cookers Limited',
+      model: '5 Litre Aluminium Domestic Pressure Cooker',
+      standardNumber: 'IS 2347',
+      productCategory: 'Cookware',
+      status: 'OPERATIVE',
+      validUntil: '2027-04-20',
+      verificationType: 'ISI_MARK',
+      factoryLocation: 'Thane, Maharashtra',
+    },
+    {
+      licenceNumber: 'CM/L-0000000',
+      brand: 'FakeShield Safety Gear',
+      manufacturer: 'Unregistered Entity',
+      model: 'Counterfeit Riding Helmet',
+      standardNumber: 'IS 4151',
+      productCategory: 'Automotive Safety',
+      status: 'SUSPENDED',
+      validUntil: '2023-01-01',
+      verificationType: 'ISI_MARK',
+      factoryLocation: 'Unknown',
+    }
+  ];
+
+  for (const pv of productVerifications) {
+    await prisma.productVerification.upsert({
+      where: { licenceNumber: pv.licenceNumber },
+      update: pv,
+      create: pv,
+    });
+  }
+
+  console.log(`✅ Seeded ${productVerifications.length} Product Verifications for scanner`);
+
+  // 5. Seed Compliance Project & Tasks for Manufacturer Demo Flow
+  const sampleProject = await prisma.complianceProject.create({
+    data: {
+      userId: manufacturerUser.id,
+      product: 'Smart Electric Kettle 1.7L (1500W)',
+      standardNumber: 'IS 302-2-15',
+      standardTitle: 'Safety of Household and Similar Electrical Appliances - Heating Liquids',
+      score: 78,
+      status: 'IN_PROGRESS',
+      readinessBreakdown: JSON.stringify({
+        standardIdentification: 100,
+        technicalDocumentation: 80,
+        laboratoryTesting: 60,
+        factoryInspectionPrep: 75,
+      }),
+      tasks: {
+        create: [
+          {
+            title: 'Verify applicable standard version (IS 302-2-15:2023)',
+            category: 'IDENTIFY',
+            status: 'COMPLETED',
+            priority: 'HIGH',
+            dueDate: '2026-09-01',
+            notes: 'Confirmed mandatory under Electrical Appliances QCO.'
+          },
+          {
+            title: 'Compile Bill of Materials (BOM) & technical specifications',
+            category: 'DISCOVER',
+            status: 'COMPLETED',
+            priority: 'HIGH',
+            dueDate: '2026-09-03',
+            notes: 'Component specs verified for food grade stainless steel liner.'
+          },
+          {
+            title: 'Review Clause 19 Abnormal Operation (Dry Boil Auto Cut-Off)',
+            category: 'UNDERSTAND',
+            status: 'COMPLETED',
+            priority: 'HIGH',
+            dueDate: '2026-09-05',
+            notes: 'Bimetal thermostat trip point set to 110°C.'
+          },
+          {
+            title: 'Select BIS-recognized laboratory for pre-compliance testing',
+            category: 'TEST',
+            status: 'IN_PROGRESS',
+            priority: 'HIGH',
+            dueDate: '2026-09-15',
+            notes: 'Shortlisted BIS Central Lab Sahibabad and TÜV SÜD Peenya.'
+          },
+          {
+            title: 'Submit Form-V application via ManakOnline portal',
+            category: 'CERTIFY',
+            status: 'PENDING',
+            priority: 'MEDIUM',
+            dueDate: '2026-09-25',
+            notes: 'Application fees and plant layout blueprint required.'
+          },
+          {
+            title: 'Set up in-house routine testing equipment (dielectric & earth bond)',
+            category: 'COMPLY',
+            status: 'PENDING',
+            priority: 'MEDIUM',
+            dueDate: '2026-10-10',
+            notes: 'Scheme of Inspection and Testing (SIT) manual drafting.'
+          }
+        ]
+      }
+    }
+  });
+
+  console.log(`✅ Seeded sample Compliance Project for ${manufacturerUser.name}`);
+
+  // 6. Seed Notifications & Alerts
+  const sampleNotifications = [
+    {
+      title: 'Gazette Alert: Mandatory QCO Enforcement on Electric Heating Appliances',
+      content: 'Ministry of Heavy Industries notifies compulsory ISI marking under Scheme I for all electric kettles, coffee makers and water heaters. Non-compliant stock prohibited from sale.',
+      type: 'QCO_UPDATE',
+      category: 'Gazette Order',
+      isUrgent: true,
+      publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    },
+    {
+      title: 'Standard Revision: IS 4151:2020 Amendment 2 on Helmet Mass Limits',
+      content: 'BIS publishes Amendment 2 refining maximum permissible helmet mass to 1.20 kg for enhanced rider comfort while upholding 300g peak deceleration threshold.',
+      type: 'STANDARD_REVISION',
+      category: 'Technical Revision',
+      isUrgent: false,
+      publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+    },
+    {
+      title: 'ManakOnline Digital Portal Upgrade for MSME Concessional Fees',
+      content: 'Special 50% concession on marking fee announced for micro and small enterprises registering for first-time Scheme-I license under Atmanirbhar Bharat initiative.',
+      type: 'SYSTEM',
+      category: 'MSME Policy',
+      isUrgent: false,
+      publishedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
+    },
+    {
+      title: 'Hallmarking Expansion: 18 Additional Districts Covered Under HUID',
+      content: 'Consumer Affairs Department extends mandatory 6-digit HUID hallmarking to 18 new districts across Andhra Pradesh, Maharashtra, and Bihar.',
+      type: 'QCO_UPDATE',
+      category: 'Hallmarking Notice',
+      isUrgent: false,
+      publishedAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000),
+    }
+  ];
+
+  for (const n of sampleNotifications) {
+    await prisma.notification.create({ data: n });
+  }
+
+  console.log(`✅ Seeded ${sampleNotifications.length} Gazette Alerts and Notifications`);
+
+  // 7. Seed Sample Uploaded Document
+  await prisma.document.create({
+    data: {
+      userId: manufacturerUser.id,
+      name: 'IS_302_2_15_Extract_Electric_Kettles.pdf',
+      fileType: 'application/pdf',
+      fileSize: 1048576, // 1MB
+      storagePath: 'uploads/sample_is_302_2_15.pdf',
+      status: 'PROCESSED',
+      extractedText: 'INDIAN STANDARD IS 302-2-15:2023 SAFETY OF HOUSEHOLD AND SIMILAR ELECTRICAL APPLIANCES. Clause 8 Protection against electric shock. Clause 11 Heating under normal load. Clause 19 Abnormal operation with dry boil. Test voltages: 1.15 times rated input. Insulation resistance >= 2 MΩ. Earth resistance <= 0.1 Ω.',
+      summary: JSON.stringify({
+        documentTitle: 'IS 302-2-15 Safety of Household Appliances - Heating Liquids',
+        keyRequirements: [
+          'Earthing continuity with contact resistance under 0.1 ohm',
+          'Automatic thermal cut-out preventing dry boil heating above 175°C',
+          'IPX0 or higher water ingress protection with spill resistance test',
+          'Supply cord anchorage capable of withstanding 25 pulls of 60 N'
+        ],
+        importantClauses: [
+          'Clause 8.1 - Electric shock protection probe test',
+          'Clause 11.4 - Handle temperature limits (max 55°C metal, 75°C plastic)',
+          'Clause 19.4 - Dry boiling abnormal protection cut-out test',
+          'Clause 22.11 - Supply cord strain relief'
+        ],
+        testingRequirements: [
+          'Dielectric strength test at 1000V AC',
+          'Dry boil cycle endurance (100 operations)',
+          'Cord flex and tension test',
+          'Spill test with 0.5L saline water poured into vessel'
+        ],
+        certificationScheme: 'Scheme I (ISI Mark under ManakOnline)',
+        potentialCompliancePitfalls: [
+          'Using uncertified thermal bi-metal cut-outs',
+          'Inadequate clearance distance between live terminal and outer metal casing',
+          'Absence of earth wire crimp solder eyelet'
+        ]
+      })
+    }
+  });
+
+  console.log('✅ SolveX database successfully seeded with realistic BIS data!');
+}
+
+main()
+  .catch((e) => {
+    console.error('❌ Error during seed:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

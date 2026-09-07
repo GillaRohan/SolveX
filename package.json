@@ -1,0 +1,21 @@
+{
+  "name": "solvex-monorepo",
+  "version": "1.0.0",
+  "description": "SolveX - AI-Powered Intelligent Assistant for Indian Standards and BIS Services",
+  "scripts": {
+    "setup": "npm --prefix backend run prisma:push && npm --prefix backend run prisma:seed",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "start": "npm --prefix backend run start"
+  },
+  "keywords": [
+    "bis",
+    "indian-standards",
+    "ai",
+    "compliance",
+    "rag"
+  ],
+  "author": "SolveX Team",
+  "license": "MIT"
+}
