@@ -53,13 +53,15 @@ app.use('/api/admin', adminRoutes);
 // Global Error Handler
 app.use(errorHandler);
 
-// Start Server
-app.listen(config.port, () => {
-  console.log(`=======================================================`);
-  console.log(`🚀 SolveX BIS Assistant Backend running on port ${config.port}`);
-  console.log(`🔗 API Base: http://localhost:${config.port}/api`);
-  console.log(`📂 Uploads: ${config.uploadDir}`);
-  console.log(`=======================================================`);
-});
+// Start Server only when not in Vercel serverless
+if (!process.env.VERCEL) {
+  app.listen(config.port, () => {
+    console.log(`=======================================================`);
+    console.log(`🚀 SolveX BIS Assistant Backend running on port ${config.port}`);
+    console.log(`🔗 API Base: http://localhost:${config.port}/api`);
+    console.log(`📂 Uploads: ${config.uploadDir}`);
+    console.log(`=======================================================`);
+  });
+}
 
 export default app;
