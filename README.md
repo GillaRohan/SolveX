@@ -1,6 +1,6 @@
-# 🚀 SolveX — ManakSetu AI
+# 🚀 SolveX — AI POWERED INTELLIGENT ASSISTANT FOR INDIAN STANDARDS AND BIS SERVICES FOR INDUSTRIES AND CONSUMERS 
 ### AI-Powered Intelligent Assistant for Indian Standards & BIS Services for Industries and Consumers
-**Smart India Hackathon (SIH 2026) — Problem Statement ID: 26107**
+
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Frontend: React + Vite + Tailwind](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite%20%2B%20Tailwind-blue)](frontend)
