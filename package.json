@@ -5,8 +5,8 @@
   "scripts": {
     "setup": "npm --prefix backend run prisma:push && npm --prefix backend run prisma:seed",
     "dev:backend": "npm --prefix backend run dev",
-    "dev:frontend": "npm --prefix frontend run dev",
-    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "build": "cd frontend && npm install && npm run build",
+    "build:all": "npm --prefix backend run build && npm --prefix frontend run build",
     "start": "npm --prefix backend run start"
   },
   "keywords": [
