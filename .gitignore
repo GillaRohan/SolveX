@@ -44,3 +44,5 @@ uploads/*
 .turbo
 .next
 .vite
+
+.vercel
