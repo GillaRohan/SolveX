@@ -64,7 +64,6 @@ export const DocumentsHub: React.FC<DocumentsHubProps> = ({ onNavigate }) => {
       clearInterval(interval);
       setUploadProgress(100);
 
-      // Refresh doc list
       await fetchDocs();
       if (res.document) {
         setSelectedDoc(res.document);
@@ -104,266 +103,235 @@ export const DocumentsHub: React.FC<DocumentsHubProps> = ({ onNavigate }) => {
       const res = await api.chatWithDocument(selectedDoc.id, q);
       setChatHistory(prev => [...prev, { q, a: res.answer }]);
     } catch (err: any) {
-      setChatHistory(prev => [...prev, { q, a: 'Error processing question on document.' }]);
+      setChatHistory(prev => [...prev, { q, a: 'Could not extract context from document. Please try again.' }]);
     } finally {
       setChatLoading(false);
     }
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Document Intelligence & Clause Extractor</h1>
-        <p className="text-xs text-slate-500">
-          Upload specifications, datasheets, or standard drafts to extract clauses, testing requirements, and compliance risks
-        </p>
-      </div>
-
-      {errorMsg && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4" />
-          {errorMsg}
+    <div className="space-y-6 animate-in fade-in text-[#1F2937]">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-2 h-6 rounded-sm bg-[#D4AF37]" />
+            <h1 className="text-2xl font-extrabold text-[#111827] tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
+              Document Intelligence Hub
+            </h1>
+          </div>
+          <p className="text-xs text-[#6B7280]">
+            Upload CAD drawings, test certificates, or datasheets for instant clause extraction and compliance analysis
+          </p>
         </div>
-      )}
 
-      {/* ===================== DRAG & DROP UPLOAD BOX ===================== */}
-      <div
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => {
-          e.preventDefault();
-          if (e.dataTransfer.files?.[0]) handleFileUpload(e.dataTransfer.files[0]);
-        }}
-        onClick={() => fileInputRef.current?.click()}
-        className="p-8 border-2 border-dashed border-bis-300 hover:border-bis-600 bg-white hover:bg-bis-50/40 rounded-3xl text-center cursor-pointer transition-all shadow-sm group"
-      >
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="flex items-center gap-2 px-4 py-2 btn-primary text-xs font-bold transition-all shadow-sm self-start sm:self-auto cursor-pointer"
+        >
+          <UploadCloud className="w-4 h-4 text-white" />
+          <span>Upload Specification</span>
+        </button>
+
         <input
           type="file"
           ref={fileInputRef}
           onChange={(e) => {
             if (e.target.files?.[0]) handleFileUpload(e.target.files[0]);
           }}
-          accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.webp"
           className="hidden"
+          accept=".pdf,.docx,.txt"
         />
-
-        <div className="w-14 h-14 rounded-2xl bg-bis-50 text-bis-600 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-          <UploadCloud className="w-7 h-7" />
-        </div>
-
-        <h3 className="font-bold text-sm text-slate-800">
-          Click to upload or drag & drop specification files
-        </h3>
-        <p className="text-xs text-slate-500 mt-1">
-          Supports PDF, Word (DOC/DOCX), Plain Text (TXT), and Engineering Drawings (PNG, JPG, WebP) up to 25MB
-        </p>
-
-        {isUploading && (
-          <div className="mt-4 max-w-xs mx-auto space-y-1.5">
-            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-              <div
-                className="bg-bis-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${uploadProgress}%` }}
-              />
-            </div>
-            <span className="text-[11px] text-bis-700 font-semibold">
-              Extracting text and analyzing clauses ({uploadProgress}%)...
-            </span>
-          </div>
-        )}
       </div>
 
-      {/* ===================== DUAL WORKSPACE: DOC LIST + ANALYSIS ===================== */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Uploaded Document List */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-            <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-              Uploaded Documents ({documents.length})
+      {errorMsg && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center justify-between animate-in fade-in">
+          <span>{errorMsg}</span>
+          <button onClick={() => setErrorMsg(null)} className="text-red-500 font-bold">✕</button>
+        </div>
+      )}
+
+      {/* Upload Progress Banner */}
+      {isUploading && (
+        <div className="card p-5 bg-white border border-[#D4AF37]/40 space-y-2 shadow-sm animate-in fade-in">
+          <div className="flex items-center justify-between text-xs font-bold">
+            <span className="text-[#996515] flex items-center gap-2">
+              <RefreshCw className="w-4 h-4 animate-spin text-[#C9A227]" />
+              Parsing technical specification with Document OCR...
             </span>
+            <span className="text-[#111827] font-mono">{uploadProgress}%</span>
           </div>
+          <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+            <div
+              className="bg-gradient-to-r from-[#D4AF37] to-[#996515] h-2 rounded-full transition-all duration-300"
+              style={{ width: `${uploadProgress}%` }}
+            />
+          </div>
+        </div>
+      )}
 
-          <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
-            {documents.length === 0 ? (
-              <div className="p-6 text-center text-xs text-slate-400">
-                No documents uploaded yet. Upload a PDF or specification sheet above.
-              </div>
-            ) : (
-              documents.map((doc) => (
-                <div
-                  key={doc.id}
-                  onClick={() => setSelectedDoc(doc)}
-                  className={`p-3 rounded-xl border text-xs cursor-pointer transition-all flex items-start justify-between gap-2 ${
-                    selectedDoc?.id === doc.id
-                      ? 'bg-bis-50/80 border-bis-300 shadow-sm'
-                      : 'bg-slate-50 hover:bg-white border-slate-200'
-                  }`}
-                >
-                  <div className="flex items-start gap-2.5 truncate">
-                    <FileText className={`w-4 h-4 shrink-0 mt-0.5 ${selectedDoc?.id === doc.id ? 'text-bis-600' : 'text-slate-400'}`} />
-                    <div className="truncate">
-                      <h4 className="font-bold text-slate-800 truncate max-w-[170px]">{doc.name}</h4>
-                      <p className="text-[10px] text-slate-400">
-                        {(doc.fileSize / 1024).toFixed(1)} KB • {doc.status}
-                      </p>
-                    </div>
-                  </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Uploaded Documents List (4 cols) */}
+        <div className="lg:col-span-4 space-y-3">
+          <div className="card p-4 space-y-3 bg-white border border-[#D4AF37]/35 shadow-sm">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+              <span className="text-xs font-bold text-[#374151] uppercase tracking-wider">
+                Specifications ({documents.length})
+              </span>
+              <span className="text-[10px] text-[#6B7280]">Select to view summary</span>
+            </div>
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(doc.id);
-                    }}
-                    className="text-slate-400 hover:text-red-600 p-1 rounded transition-colors"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+            <div className="space-y-2 max-h-[460px] overflow-y-auto pr-1">
+              {documents.length === 0 ? (
+                <div className="p-6 text-center text-xs text-[#6B7280] space-y-2">
+                  <FileText className="w-8 h-8 text-[#C9A227] mx-auto" />
+                  <p>No specifications uploaded yet.</p>
                 </div>
-              ))
-            )}
+              ) : (
+                documents.map((doc) => (
+                  <div
+                    key={doc.id}
+                    onClick={() => {
+                      setSelectedDoc(doc);
+                      setChatHistory([]);
+                    }}
+                    className={`p-3 rounded-2xl border text-xs cursor-pointer transition-all flex items-start justify-between gap-2 ${
+                      selectedDoc?.id === doc.id
+                        ? 'bg-[#FEF9C3] border-[#D4AF37] shadow-xs'
+                        : 'bg-[#FAFAF8] hover:bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2.5 min-w-0">
+                      <div className="w-7 h-7 rounded-lg bg-white border border-[#D4AF37]/30 flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
+                        <FileCheck className="w-3.5 h-3.5 text-[#996515]" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-[#111827] truncate text-xs">{doc.name}</p>
+                        <p className="text-[10px] text-[#6B7280]">
+                          {(doc.fileSize / 1024).toFixed(1)} KB • {new Date(doc.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(doc.id);
+                      }}
+                      className="p-1 text-gray-400 hover:text-red-500 rounded-lg transition-colors shrink-0 cursor-pointer"
+                      title="Delete document"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Right Column: AI Document Analysis & Chat */}
-        <div className="lg:col-span-2 space-y-6">
-          {selectedDoc && selectedDoc.summary ? (
-            <>
-              {/* Document Summary Card */}
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-200">
-                  <div>
-                    <span className="text-[10px] font-bold text-bis-600 uppercase tracking-wider bg-bis-50 px-2 py-0.5 rounded border border-bis-200">
-                      AI Document Synthesis
-                    </span>
-                    <h3 className="text-base font-bold text-slate-900 mt-1">
-                      {selectedDoc.summary.documentTitle}
-                    </h3>
-                  </div>
-
-                  <button
-                    onClick={() => onNavigate('compliance')}
-                    className="px-3 py-1.5 bg-bis-600 hover:bg-bis-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm self-start sm:self-auto"
-                  >
-                    Generate Checklist
-                  </button>
-                </div>
-
-                {/* Key Requirements & Clauses Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                      Key Requirements Identified:
-                    </span>
-                    <ul className="space-y-1 text-slate-700 list-disc list-inside">
-                      {selectedDoc.summary.keyRequirements.map((r, i) => (
-                        <li key={i} className="leading-relaxed">{r}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                      <FileCheck className="w-4 h-4 text-bis-600" />
-                      Important Clauses Citing Standards:
-                    </span>
-                    <ul className="space-y-1 text-slate-700 list-disc list-inside">
-                      {selectedDoc.summary.importantClauses.map((c, i) => (
-                        <li key={i} className="leading-relaxed">{c}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Testing Requirements & Compliance Pitfalls */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  <div className="p-4 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
-                    <span className="font-bold text-blue-900 flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-blue-700" />
-                      Laboratory Testing Protocols:
-                    </span>
-                    <ul className="space-y-1 text-slate-700 list-disc list-inside">
-                      {selectedDoc.summary.testingRequirements.map((t, i) => (
-                        <li key={i} className="leading-relaxed">{t}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="p-4 bg-amber-50/60 rounded-xl border border-amber-200 space-y-2">
-                    <span className="font-bold text-amber-900 flex items-center gap-1.5">
-                      <AlertTriangle className="w-4 h-4 text-amber-700" />
-                      Potential Compliance Pitfalls:
-                    </span>
-                    <ul className="space-y-1 text-slate-700 list-disc list-inside">
-                      {selectedDoc.summary.potentialCompliancePitfalls.map((p, i) => (
-                        <li key={i} className="leading-relaxed">{p}</li>
-                      ))}
-                    </ul>
-                  </div>
+        {/* Right Column: Detailed Document Extraction & Chat (8 cols) */}
+        <div className="lg:col-span-8 space-y-5">
+          {selectedDoc?.summary ? (
+            <div className="card p-6 space-y-5 bg-white border border-[#D4AF37]/35 shadow-sm">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#996515] bg-[#FEF9C3] px-2.5 py-0.5 rounded-md border border-[#D4AF37]/40">
+                    Auto-Extracted Specification Summary
+                  </span>
+                  <h2 className="text-base sm:text-lg font-black text-[#111827] mt-1" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                    {selectedDoc.summary.documentTitle}
+                  </h2>
                 </div>
               </div>
 
-              {/* Chat with Document Component */}
-              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-bis-600" />
-                  <h3 className="font-bold text-sm text-slate-900">
-                    Chat with Document ({selectedDoc.name})
-                  </h3>
+              {/* Requirements & Clauses Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div className="p-4 bg-[#FAFAF8] rounded-2xl border border-gray-200 space-y-1.5 shadow-2xs">
+                  <span className="font-bold text-[#111827] flex items-center gap-1.5 text-[11px]">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    Key Identified Requirements:
+                  </span>
+                  <ul className="space-y-1 text-[#4B5563] list-disc list-inside">
+                    {selectedDoc.summary.keyRequirements.map((r, i) => (
+                      <li key={i}>{r}</li>
+                    ))}
+                  </ul>
                 </div>
 
-                {/* Q&A stream */}
-                <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
-                  {chatHistory.length === 0 ? (
-                    <div className="p-4 bg-slate-50 rounded-xl text-xs text-slate-500 text-center">
-                      Ask any question about this document (e.g. "What tests are required?", "Which clauses are critical?", "What are the common pitfalls?")
-                    </div>
-                  ) : (
-                    chatHistory.map((h, i) => (
-                      <div key={i} className="space-y-2 text-xs">
-                        <div className="p-2.5 bg-bis-50 text-bis-900 font-medium rounded-lg text-right">
-                          {h.q}
+                <div className="p-4 bg-[#FAFAF8] rounded-2xl border border-gray-200 space-y-1.5 shadow-2xs">
+                  <span className="font-bold text-[#111827] flex items-center gap-1.5 text-[11px]">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#996515]" />
+                    Mandatory Indian Standards Clauses:
+                  </span>
+                  <ul className="space-y-1 text-[#4B5563] list-disc list-inside">
+                    {selectedDoc.summary.importantClauses.map((c, i) => (
+                      <li key={i}>{c}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Pitfalls Callout */}
+              <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-xs space-y-1 text-amber-900">
+                <span className="font-bold flex items-center gap-1 text-[11px] text-amber-800">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                  Potential Compliance Pitfalls &amp; Test Failures:
+                </span>
+                <ul className="space-y-1 text-[#4B5563] list-disc list-inside">
+                  {selectedDoc.summary.potentialCompliancePitfalls.map((p, i) => (
+                    <li key={i}>{p}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Document QA Chat Area */}
+              <div className="p-5 rounded-2xl bg-[#FAFAF8] border border-gray-200 space-y-3">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#111827]">
+                  <MessageSquare className="w-4 h-4 text-[#996515]" />
+                  <span>Ask AI Questions About This Specification</span>
+                </div>
+
+                {/* Chat History */}
+                {chatHistory.length > 0 && (
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1 text-xs">
+                    {chatHistory.map((item, i) => (
+                      <div key={i} className="space-y-1">
+                        <div className="p-2.5 rounded-xl bg-white border border-gray-200 text-[#111827] font-semibold text-right shadow-2xs">
+                          {item.q}
                         </div>
-                        <div className="p-3 bg-slate-50 border border-slate-200 text-slate-800 rounded-xl whitespace-pre-wrap">
-                          {h.a}
+                        <div className="p-2.5 rounded-xl bg-[#FEF9C3] border border-[#D4AF37]/40 text-[#1F2937]">
+                          {item.a}
                         </div>
                       </div>
-                    ))
-                  )}
+                    ))}
+                  </div>
+                )}
 
-                  {chatLoading && (
-                    <div className="p-3 bg-slate-50 rounded-xl text-xs text-slate-500 flex items-center gap-2">
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin text-bis-600" />
-                      Analyzing clauses in document...
-                    </div>
-                  )}
-                </div>
-
-                {/* Chat form */}
                 <form onSubmit={handleDocChat} className="flex gap-2">
                   <input
                     type="text"
                     value={chatQuery}
                     onChange={(e) => setChatQuery(e.target.value)}
-                    placeholder="Ask a question about this document..."
-                    className="flex-1 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:border-bis-600 outline-none"
+                    placeholder="e.g. What is the earth resistance limit specified in this document?..."
+                    className="flex-1 px-3.5 py-2 text-xs bg-white border border-gray-300 focus:border-[#C9A227] rounded-xl text-[#111827] placeholder-[#9CA3AF] outline-none shadow-2xs transition-all"
                   />
                   <button
                     type="submit"
                     disabled={!chatQuery.trim() || chatLoading}
-                    className="px-4 py-2 bg-bis-600 hover:bg-bis-700 text-white rounded-xl text-xs font-bold disabled:opacity-50"
+                    className="px-4 py-2 btn-primary text-xs font-bold disabled:opacity-50 cursor-pointer"
                   >
-                    <Send className="w-3.5 h-3.5" />
+                    {chatLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                   </button>
                 </form>
               </div>
-            </>
+            </div>
           ) : (
-            <div className="p-12 bg-white rounded-2xl border border-slate-200 text-center space-y-3">
-              <FileText className="w-12 h-12 text-slate-300 mx-auto" />
-              <h3 className="font-bold text-slate-700 text-sm">No Document Selected</h3>
-              <p className="text-xs text-slate-400">
-                Upload a document or select an existing document from the left list to view AI clause breakdown.
+            <div className="card p-12 text-center space-y-3 bg-white border border-[#D4AF37]/30 shadow-sm">
+              <UploadCloud className="w-12 h-12 text-[#C9A227] mx-auto" />
+              <h3 className="font-bold text-[#111827] text-sm">Select or upload a specification document</h3>
+              <p className="text-xs text-[#6B7280] max-w-sm mx-auto">
+                Our Document OCR engine automatically parses clauses, test tolerances, and BOM materials against BIS standards.
               </p>
             </div>
           )}

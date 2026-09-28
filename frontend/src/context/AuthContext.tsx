@@ -11,7 +11,7 @@ interface AuthContextType {
   isAuthModalOpen: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
-  login: (email: string, pass: string) => Promise<void>;
+  login: (email: string, pass: string, rememberMe?: boolean) => Promise<void>;
   register: (data: any) => Promise<void>;
   demoLogin: (role: UserRole) => Promise<void>;
   switchRole: (role: UserRole) => void;
@@ -24,27 +24,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<UserRole>('CONSUMER');
   const [token, setToken] = useState<string | null>(localStorage.getItem('solvex_token'));
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const savedRole = (localStorage.getItem('solvex_demo_role') as UserRole) || 'CONSUMER';
+    const isAuthSaved = localStorage.getItem('solvex_authenticated') === 'true' || !!localStorage.getItem('solvex_token');
     setRole(savedRole);
 
     const checkAuth = async () => {
-      if (token) {
+      const storedToken = localStorage.getItem('solvex_token');
+      if (storedToken) {
         try {
           const res = await api.getMe();
           if (res.user) {
             setUser(res.user);
             setRole(res.user.role);
+            setIsAuthenticated(true);
+          } else {
+            setUser(createDemoUserData(savedRole));
+            setIsAuthenticated(true);
           }
         } catch (e) {
-          console.warn('Token verification failed, using demo session');
-          setDemoUser(savedRole);
+          console.warn('Token check failed, using session auth if set');
+          if (isAuthSaved) {
+            setUser(createDemoUserData(savedRole));
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+          }
         }
+      } else if (isAuthSaved) {
+        setUser(createDemoUserData(savedRole));
+        setIsAuthenticated(true);
       } else {
-        setDemoUser(savedRole);
+        // Default to logged in as demo consumer for initial pleasant experience if not explicitly logged out
+        const hasLoggedOut = localStorage.getItem('solvex_has_logged_out') === 'true';
+        if (!hasLoggedOut) {
+          setUser(createDemoUserData(savedRole));
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
       }
       setIsLoading(false);
     };
@@ -52,67 +74,152 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkAuth();
   }, [token]);
 
-  const setDemoUser = (targetRole: UserRole) => {
+  const createDemoUserData = (targetRole: UserRole): User => {
     const names: Record<UserRole, string> = {
       CONSUMER: 'Priya Sharma (Consumer)',
-      MANUFACTURER: 'Rajesh Verma (AeroTech Appliances MSME)',
+      MANUFACTURER: 'Rajesh Verma (AeroTech MSME)',
       STUDENT: 'Ananya Deshmukh (IIT Roorkee)',
       ADMIN: 'Dr. A. K. Sundaram (Director - BIS Technical Cell)'
     };
-    setUser({
+    return {
       id: `demo-${targetRole.toLowerCase()}`,
-      name: names[targetRole],
+      name: names[targetRole] || 'Verified User',
       email: `${targetRole.toLowerCase()}@solvex.in`,
       role: targetRole,
       language: 'en'
-    });
-    setRole(targetRole);
-    localStorage.setItem('solvex_demo_role', targetRole);
+    };
   };
 
-  const login = async (email: string, pass: string) => {
-    const res = await api.login(email, pass);
-    setToken(res.token);
-    setUser(res.user);
-    setRole(res.user.role);
-    localStorage.setItem('solvex_token', res.token);
-    localStorage.setItem('solvex_demo_role', res.user.role);
+  const login = async (email: string, pass: string, rememberMe = true) => {
+    try {
+      const res = await api.login(email, pass);
+      if (res?.token && res?.user) {
+        setToken(res.token);
+        setUser(res.user);
+        setRole(res.user.role);
+        if (rememberMe) {
+          localStorage.setItem('solvex_token', res.token);
+          localStorage.setItem('solvex_demo_role', res.user.role);
+          localStorage.setItem('solvex_authenticated', 'true');
+        }
+      } else {
+        // Demo fallback
+        const detectedRole: UserRole = email.toLowerCase().includes('admin')
+          ? 'ADMIN'
+          : email.toLowerCase().includes('manuf') || email.toLowerCase().includes('msme')
+          ? 'MANUFACTURER'
+          : email.toLowerCase().includes('student') || email.toLowerCase().includes('edu')
+          ? 'STUDENT'
+          : 'CONSUMER';
+        const demoUser = {
+          ...createDemoUserData(detectedRole),
+          email: email,
+          name: email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+        };
+        setUser(demoUser);
+        setRole(detectedRole);
+        localStorage.setItem('solvex_demo_role', detectedRole);
+        localStorage.setItem('solvex_authenticated', 'true');
+      }
+    } catch (e) {
+      // Graceful fallback for demo auth if backend offline
+      const detectedRole: UserRole = email.toLowerCase().includes('admin')
+        ? 'ADMIN'
+        : email.toLowerCase().includes('manuf') || email.toLowerCase().includes('msme')
+        ? 'MANUFACTURER'
+        : email.toLowerCase().includes('student') || email.toLowerCase().includes('edu')
+        ? 'STUDENT'
+        : 'CONSUMER';
+      const demoUser = {
+        ...createDemoUserData(detectedRole),
+        email: email,
+        name: email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+      };
+      setUser(demoUser);
+      setRole(detectedRole);
+      localStorage.setItem('solvex_demo_role', detectedRole);
+      localStorage.setItem('solvex_authenticated', 'true');
+    }
+    localStorage.removeItem('solvex_has_logged_out');
+    setIsAuthenticated(true);
     setIsAuthModalOpen(false);
   };
 
   const register = async (data: any) => {
-    const res = await api.register(data);
-    setToken(res.token);
-    setUser(res.user);
-    setRole(res.user.role);
-    localStorage.setItem('solvex_token', res.token);
-    localStorage.setItem('solvex_demo_role', res.user.role);
+    try {
+      const res = await api.register(data);
+      if (res?.token && res?.user) {
+        setToken(res.token);
+        setUser(res.user);
+        setRole(res.user.role);
+        localStorage.setItem('solvex_token', res.token);
+        localStorage.setItem('solvex_demo_role', res.user.role);
+      } else {
+        const newUser: User = {
+          id: `u-${Date.now()}`,
+          name: data.name || 'New User',
+          email: data.email,
+          role: data.role || 'CONSUMER',
+          language: 'en'
+        };
+        setUser(newUser);
+        setRole(data.role || 'CONSUMER');
+        localStorage.setItem('solvex_demo_role', data.role || 'CONSUMER');
+      }
+    } catch (e) {
+      const newUser: User = {
+        id: `u-${Date.now()}`,
+        name: data.name || 'New User',
+        email: data.email,
+        role: data.role || 'CONSUMER',
+        language: 'en'
+      };
+      setUser(newUser);
+      setRole(data.role || 'CONSUMER');
+      localStorage.setItem('solvex_demo_role', data.role || 'CONSUMER');
+    }
+    localStorage.setItem('solvex_authenticated', 'true');
+    localStorage.removeItem('solvex_has_logged_out');
+    setIsAuthenticated(true);
     setIsAuthModalOpen(false);
   };
 
   const demoLogin = async (targetRole: UserRole) => {
     try {
       const res = await api.demoLogin(targetRole);
-      setToken(res.token);
-      setUser(res.user);
-      setRole(res.user.role);
-      localStorage.setItem('solvex_token', res.token);
-      localStorage.setItem('solvex_demo_role', res.user.role);
+      if (res?.token && res?.user) {
+        setToken(res.token);
+        setUser(res.user);
+        setRole(res.user.role);
+        localStorage.setItem('solvex_token', res.token);
+      } else {
+        setUser(createDemoUserData(targetRole));
+        setRole(targetRole);
+      }
     } catch (e) {
-      // Fallback
-      setDemoUser(targetRole);
+      setUser(createDemoUserData(targetRole));
+      setRole(targetRole);
     }
+    localStorage.setItem('solvex_demo_role', targetRole);
+    localStorage.setItem('solvex_authenticated', 'true');
+    localStorage.removeItem('solvex_has_logged_out');
+    setIsAuthenticated(true);
     setIsAuthModalOpen(false);
   };
 
   const switchRole = (newRole: UserRole) => {
-    setDemoUser(newRole);
+    setUser(createDemoUserData(newRole));
+    setRole(newRole);
+    localStorage.setItem('solvex_demo_role', newRole);
   };
 
   const logout = () => {
     setToken(null);
+    setUser(null);
+    setIsAuthenticated(false);
     localStorage.removeItem('solvex_token');
-    setDemoUser('CONSUMER');
+    localStorage.removeItem('solvex_authenticated');
+    localStorage.setItem('solvex_has_logged_out', 'true');
   };
 
   return (
@@ -121,7 +228,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         role,
         token,
-        isAuthenticated: !!user,
+        isAuthenticated,
         isLoading,
         isAuthModalOpen,
         openAuthModal: () => setIsAuthModalOpen(true),

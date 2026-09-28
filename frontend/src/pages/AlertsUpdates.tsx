@@ -46,17 +46,22 @@ export const AlertsUpdates: React.FC = () => {
     : notifications.filter(n => n.type === filterType);
 
   return (
-    <div className="space-y-6 animate-in fade-in">
+    <div className="space-y-6 animate-in fade-in text-[#1F2937]">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Alerts & Gazette QCO Updates</h1>
-        <p className="text-xs text-slate-500">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-2 h-6 rounded-sm bg-[#D4AF37]" />
+          <h1 className="text-2xl font-extrabold text-[#111827] tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
+            Alerts &amp; Gazette QCO Updates
+          </h1>
+        </div>
+        <p className="text-xs text-[#6B7280]">
           Stay informed on Quality Control Orders (QCOs), standard revisions, and Atmanirbhar Bharat MSME policies
         </p>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap gap-2 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex flex-wrap gap-2 bg-white p-3 rounded-2xl border border-[#D4AF37]/35 shadow-xs">
         {[
           { id: 'ALL', label: 'All Notifications' },
           { id: 'QCO_UPDATE', label: 'Mandatory QCOs' },
@@ -66,10 +71,10 @@ export const AlertsUpdates: React.FC = () => {
           <button
             key={tab.id}
             onClick={() => setFilterType(tab.id)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               filterType === tab.id
-                ? 'bg-bis-600 text-white font-bold shadow-sm'
-                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                ? 'bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-white font-bold shadow-xs'
+                : 'bg-[#FAFAF8] hover:bg-[#FEF9C3] text-[#374151] border border-gray-200'
             }`}
           >
             {tab.label}
@@ -80,11 +85,11 @@ export const AlertsUpdates: React.FC = () => {
       {/* Notifications Stream */}
       <div className="space-y-3">
         {loading ? (
-          <div className="p-12 text-center text-slate-400 text-xs">
+          <div className="p-12 text-center text-[#6B7280] text-xs">
             Loading gazette updates...
           </div>
         ) : filtered.length === 0 ? (
-          <div className="p-12 bg-white rounded-2xl border border-slate-200 text-center text-slate-500 text-xs">
+          <div className="p-12 card text-center text-[#6B7280] text-xs bg-white border border-[#D4AF37]/30">
             No notifications in this category.
           </div>
         ) : (
@@ -93,33 +98,33 @@ export const AlertsUpdates: React.FC = () => {
             return (
               <div
                 key={item.id}
-                className={`p-5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-start justify-between gap-4 ${
+                className={`p-5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-start justify-between gap-4 shadow-sm hover:shadow-md ${
                   item.isUrgent
-                    ? 'bg-amber-50/60 border-amber-200 shadow-sm'
-                    : 'bg-white border-slate-200 shadow-sm hover:shadow-md'
+                    ? 'bg-[#FEF9C3]/70 border-[#D4AF37] text-[#1F2937]'
+                    : 'bg-white border-[#E5C066]/35 text-[#1F2937] hover:border-[#D4AF37]'
                 }`}
               >
                 <div className="space-y-2 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 uppercase">
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-[#FEF9C3] text-[#996515] border border-[#D4AF37]/40 uppercase">
                       {item.category}
                     </span>
                     {item.isUrgent && (
-                      <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-red-100 text-red-700 flex items-center gap-1">
-                        <ShieldAlert className="w-3 h-3" /> Mandatory Enforcement
+                      <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                        <ShieldAlert className="w-3 h-3 text-rose-600" /> Mandatory Enforcement
                       </span>
                     )}
-                    <span className="text-[11px] text-slate-400 flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
+                    <span className="text-[11px] text-[#6B7280] flex items-center gap-1">
+                      <Calendar className="w-3 h-3 text-[#996515]" />
                       {new Date(item.publishedAt).toLocaleDateString()}
                     </span>
                   </div>
 
-                  <h3 className="font-bold text-sm sm:text-base text-slate-900 leading-snug">
+                  <h3 className="font-bold text-sm sm:text-base text-[#111827] leading-snug" style={{ fontFamily: 'Outfit, sans-serif' }}>
                     {item.title}
                   </h3>
 
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                  <p className="text-xs text-[#4B5563] leading-relaxed font-medium">
                     {item.content}
                   </p>
                 </div>
@@ -127,10 +132,10 @@ export const AlertsUpdates: React.FC = () => {
                 <div className="flex items-center gap-2 shrink-0 self-end sm:self-start">
                   <button
                     onClick={() => toggleSave(item.id)}
-                    className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1 transition-colors ${
+                    className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                       isSaved
-                        ? 'bg-bis-50 border-bis-200 text-bis-700'
-                        : 'border-slate-200 text-slate-500 hover:bg-slate-50'
+                        ? 'bg-[#FEF9C3] border-[#D4AF37] text-[#996515] font-bold shadow-2xs'
+                        : 'border-gray-200 text-[#6B7280] hover:bg-[#FEF9C3]/50 hover:text-[#111827]'
                     }`}
                   >
                     <Bookmark className="w-3.5 h-3.5" />

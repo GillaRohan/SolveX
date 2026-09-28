@@ -1,5 +1,5 @@
 export type UserRole = 'CONSUMER' | 'MANUFACTURER' | 'STUDENT' | 'ADMIN';
-export type AppLanguage = 'en' | 'hi' | 'te' | 'ta' | 'kn' | 'bn';
+export type AppLanguage = 'en' | 'hi' | 'te' | 'ta' | 'kn' | 'ml' | 'mr' | 'bn';
 
 export interface User {
   id: string;

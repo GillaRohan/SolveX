@@ -9,15 +9,18 @@ import {
   CheckCircle2, 
   ArrowRight,
   BookOpen,
-  HelpCircle
+  HelpCircle,
+  Bot
 } from 'lucide-react';
 import { NavPage } from '../components/Shell';
+import { useLanguage } from '../context/LanguageContext';
 
 interface BISInfoHubProps {
   onNavigate: (page: NavPage, data?: any) => void;
 }
 
 export const BISInfoHub: React.FC<BISInfoHubProps> = ({ onNavigate }) => {
+  const { t } = useLanguage();
   const [activeCategory, setActiveCategory] = useState('ALL');
 
   const categories = [
@@ -26,8 +29,7 @@ export const BISInfoHub: React.FC<BISInfoHubProps> = ({ onNavigate }) => {
     'Compulsory Registration (Scheme II)',
     'Hallmarking Scheme',
     'Foreign Manufacturers (FMCS)',
-    'Laboratory Recognition (LRS)',
-    'Consumer Protection Services'
+    'Laboratory Recognition (LRS)'
   ];
 
   const infoCards = [
@@ -98,22 +100,8 @@ export const BISInfoHub: React.FC<BISInfoHubProps> = ({ onNavigate }) => {
         'Enables private and academic labs to execute statutory compliance testing.',
         'Covers chemical, electrical, mechanical, and microbiological domains.'
       ],
-      portal: 'BIS Laboratory Network Portal',
-      standardsCount: '280+ recognized labs'
-    },
-    {
-      id: 'consumer',
-      category: 'Consumer Protection Services',
-      title: 'Consumer Rights & BIS Care Mobile Platform',
-      summary: 'Tools for citizens to verify products, lodge complaints against misuse of marks, and claim redressal.',
-      details: [
-        'Instant verification of CM/L, R-numbers, and HUID codes via mobile app.',
-        'Direct grievance redressal mechanism for substandard or fake ISI marked products.',
-        'Statutory penalties for unauthorized use of Standard Marks under BIS Act 2016.',
-        'Public awareness campaigns under Jago Grahak Jago.'
-      ],
-      portal: 'BIS Care App & National Consumer Helpline 1915',
-      standardsCount: 'Pan-India consumer coverage'
+      portal: 'LRS Module (manakonline.in)',
+      standardsCount: '280+ active laboratories'
     }
   ];
 
@@ -122,77 +110,102 @@ export const BISInfoHub: React.FC<BISInfoHubProps> = ({ onNavigate }) => {
     : infoCards.filter(c => c.category === activeCategory);
 
   return (
-    <div className="space-y-6 animate-in fade-in">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">BIS Information & Schemes Hub</h1>
-        <p className="text-xs text-slate-500">
-          Comprehensive guide to the Bureau of Indian Standards statutory schemes, certification processes, and portals
-        </p>
+    <div className="space-y-6 max-w-6xl mx-auto text-[#192425]">
+      {/* ── Top Header Card ─────────────────────────────────── */}
+      <div className="saas-card p-6 sm:p-8 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E6DF] pb-6">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-[#8B9798] uppercase tracking-wider">
+                STATUTORY GUIDANCE &amp; SCHEMES
+              </span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#C99738]/15 text-[#A47720] font-bold border border-[#C99738]/30">
+                BIS Act 2016
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#113235] font-serif-heading">
+              {t('bisInfoTitle')}
+            </h1>
+            <p className="text-sm text-[#5C6768]">
+              {t('bisInfoSubtitle')}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => onNavigate('dashboard')}
+              className="btn-outline text-xs"
+            >
+              {t('overview')}
+            </button>
+            <button
+              onClick={() => onNavigate('ai-assistant')}
+              className="btn-teal text-xs"
+            >
+              <Bot className="w-4 h-4" />
+              <span>{t('askAI')}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Category Filter Pills */}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeCategory === cat
+                  ? 'bg-[#113235] text-white shadow-xs'
+                  : 'bg-[#F3F4F0] text-[#5C6768] hover:bg-[#EAECE6] hover:text-[#192425] border border-[#E2E6DF]'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Category Pills */}
-      <div className="flex flex-wrap gap-1.5 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-              activeCategory === cat
-                ? 'bg-bis-600 text-white font-bold shadow-sm'
-                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-            }`}
-          >
-            {cat === 'ALL' ? 'All Schemes & Services' : cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {/* ── Info Cards Grid ─────────────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredCards.map((card) => (
-          <div
-            key={card.id}
-            className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all space-y-4 flex flex-col justify-between"
-          >
+          <div key={card.id} className="saas-card p-6 flex flex-col justify-between space-y-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-bis-700 bg-bis-50 border border-bis-200 px-2.5 py-0.5 rounded-lg">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#C99738]/15 text-[#A47720] border border-[#C99738]/30">
                   {card.category}
                 </span>
-                <span className="text-[11px] text-slate-400 font-medium">
+                <span className="text-xs text-[#8B9798] font-medium">
                   {card.standardsCount}
                 </span>
               </div>
 
-              <h3 className="text-base font-bold text-slate-900 leading-snug">
-                {card.title}
-              </h3>
+              <div>
+                <h3 className="text-base font-bold text-[#113235]">
+                  {card.title}
+                </h3>
+                <p className="text-xs text-[#5C6768] mt-1 leading-relaxed">
+                  {card.summary}
+                </p>
+              </div>
 
-              <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                {card.summary}
-              </p>
-
-              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100 space-y-1.5 text-xs text-slate-700">
-                <span className="font-bold text-slate-800 block text-[11px]">Key Highlights:</span>
-                <ul className="space-y-1 list-disc list-inside text-[11px] text-slate-600">
-                  {card.details.map((d, i) => (
-                    <li key={i}>{d}</li>
-                  ))}
-                </ul>
+              <div className="space-y-1.5 pt-2 border-t border-[#E2E6DF]">
+                {card.details.map((point, i) => (
+                  <div key={i} className="flex items-start gap-2 text-xs text-[#5C6768]">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>{point}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span className="text-[11px] text-slate-400 font-mono truncate max-w-[200px]">
-                {card.portal}
-              </span>
-
+            <div className="pt-3 border-t border-[#E2E6DF] flex items-center justify-between text-xs">
+              <span className="text-[#8B9798] text-[11px] truncate">{card.portal}</span>
               <button
-                onClick={() => onNavigate('ai-assistant', { initialQuery: `Explain ${card.title} in detail.` })}
-                className="flex items-center gap-1 font-bold text-bis-600 hover:text-bis-800"
+                onClick={() => onNavigate('standards')}
+                className="font-bold text-[#113235] hover:text-[#C99738] flex items-center gap-1 transition-colors cursor-pointer"
               >
-                <span>Consult AI</span>
+                <span>View Products</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>

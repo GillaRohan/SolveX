@@ -28,16 +28,16 @@ export const MarkInspector: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-5">
+    <div className="card p-6 sm:p-8 space-y-5 bg-white border border-[#D4AF37]/35 shadow-sm">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-2xl bg-bis-50 text-bis-600 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-2xl bg-[#FEF9C3] text-[#996515] border border-[#D4AF37]/40 flex items-center justify-center shadow-xs">
           <Eye className="w-5 h-5" />
         </div>
         <div>
-          <h2 className="text-base sm:text-lg font-bold text-slate-900">
+          <h2 className="text-base sm:text-lg font-extrabold text-[#111827]" style={{ fontFamily: 'Outfit, sans-serif' }}>
             Interactive BIS Mark Authenticity Inspector
           </h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[#6B7280]">
             Click on each section of the mark below to learn how to spot genuine certification vs counterfeit labels
           </p>
         </div>
@@ -45,18 +45,21 @@ export const MarkInspector: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
         {/* Interactive Holographic Mark Card */}
-        <div className="bg-gradient-to-br from-[#071D33] via-[#0A2540] to-bis-900 rounded-3xl p-6 text-white text-center shadow-xl border border-slate-700/50 flex flex-col items-center justify-center min-h-[260px] space-y-4">
-          <span className="text-[10px] text-cyan-300 font-bold uppercase tracking-widest bg-white/10 px-3 py-1 rounded-full border border-white/15">
+        <div 
+          className="rounded-3xl p-6 text-center shadow-md border border-[#D4AF37]/40 flex flex-col items-center justify-center min-h-[260px] space-y-4"
+          style={{ background: 'linear-gradient(135deg, #1C180A 0%, #29210B 100%)' }}
+        >
+          <span className="text-[10px] text-[#F5D77F] font-bold uppercase tracking-widest bg-white/10 px-3 py-1 rounded-full border border-[#D4AF37]/30 backdrop-blur-md">
             Interactive Mark Hotspots
           </span>
 
           {/* Hotspot 1: IS Standard */}
           <button
             onClick={() => setSelectedHotspot('standard')}
-            className={`px-4 py-1.5 rounded-xl font-mono text-xs font-black transition-all ${
+            className={`px-4 py-1.5 rounded-xl font-mono text-xs font-black transition-all cursor-pointer ${
               selectedHotspot === 'standard'
-                ? 'bg-cyan-400 text-slate-950 ring-4 ring-cyan-400/30 scale-105'
-                : 'bg-white/15 text-white hover:bg-white/25 border border-white/20'
+                ? 'bg-[#D4AF37] text-[#111827] ring-4 ring-[#D4AF37]/40 scale-105 shadow-md font-bold'
+                : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'
             }`}
           >
             IS 302-2-15 🎯
@@ -65,10 +68,10 @@ export const MarkInspector: React.FC = () => {
           {/* Hotspot 2: Monogram */}
           <button
             onClick={() => setSelectedHotspot('monogram')}
-            className={`w-28 h-20 rounded-2xl flex flex-col items-center justify-center font-serif font-black text-2xl tracking-tighter transition-all ${
+            className={`w-28 h-20 rounded-2xl flex flex-col items-center justify-center font-serif font-black text-2xl tracking-tighter transition-all cursor-pointer ${
               selectedHotspot === 'monogram'
-                ? 'bg-gradient-to-tr from-cyan-400 to-white text-slate-950 ring-4 ring-cyan-400/30 scale-105'
-                : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
+                ? 'bg-gradient-to-tr from-[#F5D77F] to-[#D4AF37] text-[#111827] ring-4 ring-[#D4AF37]/40 scale-105 shadow-md'
+                : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'
             }`}
           >
             <span>🇮🇳 ISI</span>
@@ -78,10 +81,10 @@ export const MarkInspector: React.FC = () => {
           {/* Hotspot 3: CM/L Number */}
           <button
             onClick={() => setSelectedHotspot('cml')}
-            className={`px-4 py-1.5 rounded-xl font-mono text-xs font-black transition-all ${
+            className={`px-4 py-1.5 rounded-xl font-mono text-xs font-black transition-all cursor-pointer ${
               selectedHotspot === 'cml'
-                ? 'bg-cyan-400 text-slate-950 ring-4 ring-cyan-400/30 scale-105'
-                : 'bg-white/15 text-white hover:bg-white/25 border border-white/20'
+                ? 'bg-[#D4AF37] text-[#111827] ring-4 ring-[#D4AF37]/40 scale-105 shadow-md font-bold'
+                : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'
             }`}
           >
             CM/L - 8400192 🎯
@@ -89,29 +92,29 @@ export const MarkInspector: React.FC = () => {
         </div>
 
         {/* Inspection Details Card */}
-        <div className="bg-slate-50 rounded-3xl p-6 border border-slate-200 space-y-4 text-xs">
+        <div className="bg-[#FAFAF8] rounded-3xl p-6 border border-[#E5C066]/30 space-y-4 text-xs">
           <div className="flex items-center gap-2">
-            <span className="font-extrabold text-sm text-bis-800">
+            <span className="font-extrabold text-sm text-[#111827]">
               {inspectionPoints[selectedHotspot].title}
             </span>
           </div>
 
-          <div className="p-3.5 bg-white rounded-2xl border border-slate-200/80 space-y-1">
-            <span className="font-bold text-emerald-800 flex items-center gap-1.5 text-[11px]">
-              <Check className="w-3.5 h-3.5 text-emerald-600" />
+          <div className="p-3.5 bg-white rounded-2xl border border-gray-200 space-y-1 shadow-2xs">
+            <span className="font-bold text-[#996515] flex items-center gap-1.5 text-[11px]">
+              <Check className="w-3.5 h-3.5 text-[#996515]" />
               Statutory Requirement:
             </span>
-            <p className="text-slate-700 leading-relaxed font-medium">
+            <p className="text-[#374151] leading-relaxed font-medium">
               {inspectionPoints[selectedHotspot].rule}
             </p>
           </div>
 
-          <div className="p-3.5 bg-red-50/70 rounded-2xl border border-red-200/80 space-y-1">
-            <span className="font-bold text-red-800 flex items-center gap-1.5 text-[11px]">
-              <AlertCircle className="w-3.5 h-3.5 text-red-600" />
+          <div className="p-3.5 bg-rose-50 rounded-2xl border border-rose-200 space-y-1">
+            <span className="font-bold text-rose-700 flex items-center gap-1.5 text-[11px]">
+              <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
               How to Spot Counterfeits:
             </span>
-            <p className="text-slate-700 leading-relaxed font-medium">
+            <p className="text-rose-800 leading-relaxed font-medium">
               {inspectionPoints[selectedHotspot].fakeTell}
             </p>
           </div>

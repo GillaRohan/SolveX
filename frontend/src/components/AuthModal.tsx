@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, User, Phone, ShieldCheck, ArrowRight, Award } from 'lucide-react';
+import { X, Lock, Mail, User, ShieldCheck, ArrowRight, Award, Building2, GraduationCap, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { UserRole } from '../types';
 
@@ -47,35 +47,40 @@ export const AuthModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-[#D4AF37]/50 overflow-hidden text-[#1F2937]">
         {/* Header */}
-        <div className="bg-[#0A2540] text-white p-6 relative">
+        <div className="bg-[#FAFAF8] p-6 relative border-b border-[#E5C066]/30">
           <button 
             onClick={closeAuthModal}
-            className="absolute top-4 right-4 p-1 text-slate-400 hover:text-white rounded-lg"
+            className="absolute top-4 right-4 p-1.5 text-[#6B7280] hover:text-[#111827] rounded-lg cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
 
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-bis-600 to-cyan-400 flex items-center justify-center">
+            <div 
+              className="w-8 h-8 rounded-xl flex items-center justify-center shadow-xs"
+              style={{ background: 'linear-gradient(135deg, #D4AF37, #996515)' }}
+            >
               <Award className="w-5 h-5 text-white" />
             </div>
-            <span className="font-extrabold text-lg">SolveX Portal</span>
+            <span className="font-black text-lg text-[#111827]" style={{ fontFamily: 'Outfit, sans-serif' }}>
+              SolveX Portal
+            </span>
           </div>
 
-          <h3 className="text-xl font-bold">
+          <h3 className="text-xl font-bold text-[#111827]">
             {mode === 'login' ? 'Sign In to Your Workspace' : 'Create an Account'}
           </h3>
-          <p className="text-xs text-slate-300 mt-1">
-            Indian Standards & BIS Compliance Assistant
+          <p className="text-xs text-[#6B7280] mt-0.5">
+            Indian Standards &amp; BIS Compliance Assistant
           </p>
         </div>
 
         <div className="p-6 space-y-4">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700">
               {error}
             </div>
           )}
@@ -85,26 +90,26 @@ export const AuthModal: React.FC = () => {
             {mode === 'register' && (
               <>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
+                  <label className="block text-xs font-bold text-[#374151] mb-1">Full Name</label>
                   <div className="relative">
-                    <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <User className="w-4 h-4 text-[#9CA3AF] absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Priya Sharma"
-                      className="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:border-bis-600 outline-none"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-[#FAFAF8] border border-gray-200 rounded-xl text-[#111827] placeholder-[#9CA3AF] focus:border-[#C9A227] focus:bg-white outline-none shadow-2xs"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Select Persona / Role</label>
+                  <label className="block text-xs font-bold text-[#374151] mb-1">Select Persona / Role</label>
                   <select
                     value={role}
                     onChange={(e) => setRole(e.target.value as UserRole)}
-                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:border-bis-600 outline-none bg-white font-medium"
+                    className="w-full px-3 py-2 text-xs bg-[#FAFAF8] border border-gray-200 rounded-xl text-[#111827] focus:border-[#C9A227] focus:bg-white outline-none font-medium shadow-2xs"
                   >
                     <option value="CONSUMER">Consumer (Product verification & guidance)</option>
                     <option value="MANUFACTURER">Manufacturer / MSME (Testing & Certification)</option>
@@ -116,31 +121,31 @@ export const AuthModal: React.FC = () => {
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
+              <label className="block text-xs font-bold text-[#374151] mb-1">Email Address</label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-[#9CA3AF] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@organization.in"
-                  className="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:border-bis-600 outline-none"
+                  className="w-full pl-9 pr-3 py-2 text-xs bg-[#FAFAF8] border border-gray-200 rounded-xl text-[#111827] placeholder-[#9CA3AF] focus:border-[#C9A227] focus:bg-white outline-none shadow-2xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Password</label>
+              <label className="block text-xs font-bold text-[#374151] mb-1">Password</label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-[#9CA3AF] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:border-bis-600 outline-none"
+                  className="w-full pl-9 pr-3 py-2 text-xs bg-[#FAFAF8] border border-gray-200 rounded-xl text-[#111827] placeholder-[#9CA3AF] focus:border-[#C9A227] focus:bg-white outline-none shadow-2xs"
                 />
               </div>
             </div>
@@ -148,25 +153,25 @@ export const AuthModal: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-bis-600 hover:bg-bis-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-bis-600/20 disabled:opacity-50"
+              className="w-full py-2.5 btn-primary justify-center text-xs font-bold disabled:opacity-50 cursor-pointer shadow-sm"
             >
               {loading ? 'Processing...' : mode === 'login' ? 'Sign In' : 'Create Account'}
             </button>
           </form>
 
           {/* Toggle between login & register */}
-          <div className="text-center text-xs text-slate-500 pt-1">
+          <div className="text-center text-xs text-[#6B7280] pt-1">
             {mode === 'login' ? (
               <span>
                 Don't have an account?{' '}
-                <button onClick={() => setMode('register')} className="text-bis-600 font-bold hover:underline">
+                <button onClick={() => setMode('register')} className="text-[#996515] font-bold hover:underline cursor-pointer">
                   Register here
                 </button>
               </span>
             ) : (
               <span>
                 Already have an account?{' '}
-                <button onClick={() => setMode('login')} className="text-bis-600 font-bold hover:underline">
+                <button onClick={() => setMode('login')} className="text-[#996515] font-bold hover:underline cursor-pointer">
                   Sign In
                 </button>
               </span>
@@ -174,46 +179,46 @@ export const AuthModal: React.FC = () => {
           </div>
 
           {/* One-Click Demo Personas */}
-          <div className="pt-3 border-t border-slate-100">
-            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center mb-2.5">
-              Or Explore Instantly with 1-Click Demo
+          <div className="pt-3 border-t border-gray-100">
+            <div className="text-[11px] font-bold text-[#996515] uppercase tracking-wider text-center mb-2.5">
+              ⚡ Instant 1-Click Demo Personas
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => handleDemo('MANUFACTURER')}
-                className="p-2.5 rounded-xl border border-blue-200 bg-blue-50/50 hover:bg-blue-100 text-left transition-colors"
+                className="p-2.5 rounded-xl border border-[#D4AF37]/35 bg-[#FAFAF8] hover:bg-[#FEF9C3]/50 text-left transition-all cursor-pointer shadow-2xs"
               >
-                <div className="text-xs font-bold text-blue-900">MSME Manufacturer</div>
-                <div className="text-[10px] text-blue-700">Roadmap & Testing</div>
+                <div className="text-xs font-bold text-[#111827]">MSME Manufacturer</div>
+                <div className="text-[10px] text-[#6B7280]">Roadmap & Testing</div>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleDemo('CONSUMER')}
-                className="p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100 text-left transition-colors"
+                className="p-2.5 rounded-xl border border-[#D4AF37]/35 bg-[#FAFAF8] hover:bg-[#FEF9C3]/50 text-left transition-all cursor-pointer shadow-2xs"
               >
-                <div className="text-xs font-bold text-emerald-900">Consumer</div>
-                <div className="text-[10px] text-emerald-700">Product Scanning</div>
+                <div className="text-xs font-bold text-[#111827]">Consumer</div>
+                <div className="text-[10px] text-[#6B7280]">Product Guidance</div>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleDemo('STUDENT')}
-                className="p-2.5 rounded-xl border border-amber-200 bg-amber-50/50 hover:bg-amber-100 text-left transition-colors"
+                className="p-2.5 rounded-xl border border-[#D4AF37]/35 bg-[#FAFAF8] hover:bg-[#FEF9C3]/50 text-left transition-all cursor-pointer shadow-2xs"
               >
-                <div className="text-xs font-bold text-amber-900">Student/Researcher</div>
-                <div className="text-[10px] text-amber-700">Clauses & Standards</div>
+                <div className="text-xs font-bold text-[#111827]">Student / Academic</div>
+                <div className="text-[10px] text-[#6B7280]">Standards Research</div>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleDemo('ADMIN')}
-                className="p-2.5 rounded-xl border border-purple-200 bg-purple-50/50 hover:bg-purple-100 text-left transition-colors"
+                className="p-2.5 rounded-xl border border-[#D4AF37]/35 bg-[#FAFAF8] hover:bg-[#FEF9C3]/50 text-left transition-all cursor-pointer shadow-2xs"
               >
-                <div className="text-xs font-bold text-purple-900">Admin Command</div>
-                <div className="text-[10px] text-purple-700">Analytics & Registry</div>
+                <div className="text-xs font-bold text-[#111827]">BIS Officer</div>
+                <div className="text-[10px] text-[#6B7280]">System Command</div>
               </button>
             </div>
           </div>

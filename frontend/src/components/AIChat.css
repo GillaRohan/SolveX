@@ -4,51 +4,63 @@
   right: 1.5rem;
   width: 3.5rem;
   height: 3.5rem;
-  background: linear-gradient(135deg, #0066ff, #00ccff);
+  background: linear-gradient(135deg, #059669, #10B981, #8B5CF6);
   color: #fff;
-  border: none;
+  border: 1px solid rgba(16, 185, 129, 0.4);
   border-radius: 50%;
   font-size: 1.8rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  z-index: 50;
 }
-.ai-chat-button:hover { transform: scale(1.08); }
+.ai-chat-button:hover { 
+  transform: scale(1.1); 
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.6);
+}
 .ai-chat-popup {
   position: fixed;
   bottom: 5.5rem;
   right: 1.5rem;
   width: 340px;
   max-height: 70vh;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  background: #121620;
+  border-radius: 20px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  z-index: 50;
+  color: #F9FAFB;
 }
 .ai-chat-header {
-  background: linear-gradient(135deg, #0066ff, #00ccff);
+  background: linear-gradient(135deg, #07090E, #121620);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   color: #fff;
-  padding: 0.8rem 1rem;
+  padding: 1rem 1.2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.ai-chat-header h3 { margin:0; font-size:1rem; font-weight:600; }
+.ai-chat-header h3 { margin:0; font-size:0.95rem; font-weight:700; }
 .close-btn {
-  background:none; border:none; color:#fff; font-size:1.1rem; cursor:pointer; }
-.ai-chat-body {
-  flex:1; padding:0.75rem 1rem; overflow-y:auto; font-size:0.9rem;
-  color:#333;
+  background:none; border:none; color:rgba(255,255,255,0.7); font-size:1.1rem; cursor:pointer; 
 }
-.placeholder-text { opacity:0.6; }
+.close-btn:hover { color:#fff; }
+.ai-chat-body {
+  flex:1; padding:1rem; overflow-y:auto; font-size:0.85rem;
+  color:#F9FAFB;
+  background: #0B0E14;
+}
+.placeholder-text { opacity:0.8; font-weight: 500; color: #9CA3AF; }
 .ai-chat-input {
-  display:flex; padding:0.6rem 1rem; border-top:1px solid #eee;
+  display:flex; padding:0.75rem 1rem; border-top:1px solid rgba(255, 255, 255, 0.1);
+  background: #121620;
 }
 .ai-chat-input input {
-  flex:1; border:none; outline:none; padding:0.4rem; font-size:0.9rem;
+  flex:1; border:1px solid rgba(255, 255, 255, 0.12); outline:none; padding:0.4rem 0.6rem; font-size:0.85rem; border-radius: 8px; color: #F9FAFB; background: #161B26;
 }
 .ai-chat-input button {
-  margin-left:0.4rem; background:#0066ff; color:#fff; border:none; padding:0.4rem 0.6rem; border-radius:4px; cursor:pointer; font-size:0.9rem;
+  margin-left:0.4rem; background: linear-gradient(135deg, #059669, #10B981); color:#fff; border:none; padding:0.4rem 0.8rem; border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight: 600;
 }

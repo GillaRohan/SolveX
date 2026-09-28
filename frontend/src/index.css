@@ -1,83 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   SOLVEX — BIS COMPLIANCE ASSISTANT DESIGN SYSTEM
+   Theme: DARK TEAL SIDEBAR + WARM OFF-WHITE WORKSPACE + GOLD ACCENT
+   Inspired by clean clinical SaaS enterprise layouts
+   ============================================================ */
+
+:root {
+  /* Workspace & Base */
+  --bg-workspace: #F7F8F5;
+  --bg-card: #FFFFFF;
+  --bg-input: #F3F4F0;
+  --text-main: #192425;
+  --text-muted: #5C6768;
+  --text-light: #8B9798;
+  --border-subtle: #E2E6DF;
+  --border-card: #E4E8E1;
+
+  /* Dark Teal Sidebar Tokens */
+  --sidebar-bg: #0D282A;
+  --sidebar-surface: #133437;
+  --sidebar-active: #184245;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-text: #E1E8E8;
+  --sidebar-text-muted: #8AA4A6;
+
+  /* Accent Colors */
+  --teal-primary: #113235;
+  --teal-hover: #174246;
+  --teal-light: #20575B;
+  --teal-accent: #2DD4BF;
+  
+  --gold-primary: #C99738;
+  --gold-light: #E0B45C;
+  --gold-dark: #A47720;
+  --gold-badge-bg: #FBF5E8;
+  --gold-border: #E8D3A7;
+}
+
 @layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg-workspace);
+    color: var(--text-main);
+  }
+
   body {
-    @apply bg-[#F8FAFC] text-slate-800 antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-workspace);
+    color: var(--text-main);
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: rgba(201, 151, 56, 0.25);
+    color: #0D282A;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Outfit', 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-main);
+    letter-spacing: -0.015em;
+  }
+
+  .font-serif-heading {
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
   }
 }
 
-/* Custom animations */
-@keyframes scanline {
-  0% {
-    top: 0%;
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    top: 98%;
-    opacity: 0.8;
-  }
+/* ── REFINED SAAS CARD STYLES ────────────────────────── */
+.saas-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-card);
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(13, 40, 42, 0.04), 0 1px 2px rgba(13, 40, 42, 0.02);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.animate-scanline {
-  animation: scanline 2.2s ease-in-out infinite alternate;
+.saas-card:hover {
+  border-color: #D3DAD0;
+  box-shadow: 0 6px 18px -4px rgba(13, 40, 42, 0.08), 0 2px 6px -2px rgba(13, 40, 42, 0.03);
 }
 
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(0, 82, 204, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 14px rgba(0, 82, 204, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(0, 82, 204, 0);
-  }
+.saas-input {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  transition: all 0.15s ease;
 }
 
-.animate-pulse-ring {
-  animation: pulse-ring 2s infinite cubic-bezier(0.45, 0, 0.55, 1);
+.saas-input:focus {
+  outline: none;
+  background-color: #FFFFFF;
+  border-color: var(--teal-primary);
+  box-shadow: 0 0 0 3px rgba(17, 50, 53, 0.12);
 }
 
-/* Smooth custom scrollbars */
+/* ── BUTTON STYLES ──────────────────────────────────── */
+.btn-teal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.125rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #FFFFFF;
+  background-color: var(--teal-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 3px rgba(13, 40, 42, 0.12);
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+.btn-teal:hover {
+  background-color: var(--teal-hover);
+  box-shadow: 0 3px 8px rgba(13, 40, 42, 0.18);
+  transform: translateY(-1px);
+}
+
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.125rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #FFFFFF;
+  background-color: var(--gold-primary);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 3px rgba(201, 151, 56, 0.25);
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+.btn-gold:hover {
+  background-color: var(--gold-dark);
+  box-shadow: 0 3px 10px rgba(201, 151, 56, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.125rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background-color: #F7F8F5;
+  border-color: #D3DAD0;
+}
+
+/* ── CUSTOM SCROLLBAR ───────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
+  background: #D1D8D4;
+  border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Glass effect utilities */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-.glass-dark {
-  background: rgba(10, 37, 64, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #A9B7B1;
 }

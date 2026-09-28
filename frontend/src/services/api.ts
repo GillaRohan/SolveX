@@ -11,7 +11,7 @@ import {
 } from '../types';
 import { MOCK_STANDARDS, MOCK_LABORATORIES, MOCK_VERIFICATIONS } from './mockData';
 
-const API_BASE = '/api';
+export const API_BASE = (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : '') + '/api';
 
 function getHeaders(): HeadersInit {
   const token = localStorage.getItem('solvex_token');

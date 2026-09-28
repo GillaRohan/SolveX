@@ -8,31 +8,58 @@ export default {
   theme: {
     extend: {
       colors: {
-        bis: {
-          950: '#071626',
-          900: '#0A2540',
-          850: '#0D2E4E',
-          800: '#003366',
-          700: '#004080',
-          600: '#0052CC',
-          500: '#1A73E8',
-          400: '#4285F4',
-          300: '#8AB4F8',
-          200: '#D2E3FC',
-          100: '#E8F0FE',
-          50: '#F4F7FB',
+        teal: {
+          900: '#0D282A',
+          800: '#113235',
+          700: '#174246',
+          600: '#1E5558',
+          500: '#2A6B6E',
+          accent: '#2DD4BF',
         },
-        slate: {
-          850: '#151E2E',
+        gold: {
+          50: '#FBF5E8',
+          100: '#F5E8C8',
+          200: '#E8D3A7',
+          300: '#D9BB7A',
+          400: '#CDA84E',
+          500: '#C99738',
+          600: '#A47720',
+          700: '#7D5A18',
+          800: '#5C4011',
+          900: '#3D2A0A',
+        },
+        workspace: {
+          bg: '#F7F8F5',
+          card: '#FFFFFF',
+          input: '#F3F4F0',
+          border: '#E2E6DF',
+          'border-hover': '#D3DAD0',
         }
       },
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        serif: ['Playfair Display', 'Georgia', 'serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+      },
+      borderWidth: {
+        '3': '3px',
       },
       boxShadow: {
-        'card': '0 2px 8px -1px rgba(10, 37, 64, 0.08), 0 1px 4px -1px rgba(10, 37, 64, 0.04)',
-        'card-hover': '0 8px 24px -2px rgba(10, 37, 64, 0.12), 0 3px 8px -2px rgba(10, 37, 64, 0.06)',
-        'glow': '0 0 20px rgba(0, 82, 204, 0.25)',
+        'xs': '0 1px 2px rgba(0, 0, 0, 0.04)',
+        '2xs': '0 1px 1px rgba(0, 0, 0, 0.03)',
+        'card': '0 1px 3px rgba(13, 40, 42, 0.04), 0 1px 2px rgba(13, 40, 42, 0.02)',
+        'card-hover': '0 6px 18px -4px rgba(13, 40, 42, 0.08), 0 2px 6px -2px rgba(13, 40, 42, 0.03)',
+        'teal': '0 4px 14px rgba(17, 50, 53, 0.25)',
+        'gold': '0 4px 14px rgba(201, 151, 56, 0.25)',
+      },
+      animation: {
+        'in': 'fade-slide-in 0.25s ease-out',
+      },
+      keyframes: {
+        'fade-slide-in': {
+          from: { opacity: '0', transform: 'translateY(4px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        }
       }
     },
   },

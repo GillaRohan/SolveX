@@ -32,7 +32,7 @@ export const FloatingAIAgent: React.FC<FloatingAIAgentProps> = ({
     {
       id: 'pop-1',
       role: 'assistant',
-      content: 'Hello! I am your **BIS AI Assistant**. Ask me about Indian Standards (IS), mandatory QCOs, testing labs, or compliance roadmaps.',
+      content: 'Namaste! I am your **BIS AI Assistant**. Ask me about Indian Standards (IS), mandatory QCOs, testing labs, or certification roadmaps.',
       createdAt: new Date().toISOString()
     }
   ]);
@@ -97,19 +97,24 @@ export const FloatingAIAgent: React.FC<FloatingAIAgentProps> = ({
     <div className="fixed bottom-6 right-6 z-50 select-none">
       {/* ===================== EXPANDED CHAT POPUP ===================== */}
       {isOpen && (
-        <div className="relative mb-3 w-[360px] sm:w-[400px] h-[520px] bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden flex flex-col animate-in slide-in-from-bottom-5 duration-200">
+        <div className="relative mb-3 w-[360px] sm:w-[400px] h-[520px] bg-white rounded-3xl shadow-2xl border border-[#D4AF37]/45 overflow-hidden flex flex-col animate-in slide-in-from-bottom-5 duration-200 text-[#1F2937]">
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-[#071D33] via-[#0A2540] to-bis-800 text-white flex items-center justify-between shadow-md">
+          <div className="p-4 bg-[#FAFAF8] text-[#111827] flex items-center justify-between border-b border-[#E5C066]/30">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-bis-500 to-cyan-400 flex items-center justify-center shadow-sm">
+              <div 
+                className="w-8 h-8 rounded-xl flex items-center justify-center shadow-xs"
+                style={{ background: 'linear-gradient(135deg, #D4AF37, #996515)' }}
+              >
                 <Bot className="w-4 h-4 text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h3 className="font-bold text-xs text-white">SolveX BIS Assistant</h3>
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <h3 className="font-extrabold text-xs text-[#111827]" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                    BIS AI Quick Agent
+                  </h3>
+                  <span className="w-2 h-2 rounded-full bg-[#D4AF37]" />
                 </div>
-                <p className="text-[10px] text-slate-300">Grounded Knowledge Agent</p>
+                <p className="text-[10px] text-[#6B7280]">Grounded Standards Knowledge</p>
               </div>
             </div>
 
@@ -121,7 +126,7 @@ export const FloatingAIAgent: React.FC<FloatingAIAgentProps> = ({
                     onOpenFullAssistant();
                   }}
                   title="Expand to Full Screen"
-                  className="p-1 text-slate-300 hover:text-white rounded-lg transition-colors"
+                  className="p-1 text-[#6B7280] hover:text-[#111827] rounded-lg transition-colors cursor-pointer"
                 >
                   <Maximize2 className="w-3.5 h-3.5" />
                 </button>
@@ -129,7 +134,7 @@ export const FloatingAIAgent: React.FC<FloatingAIAgentProps> = ({
               <button
                 onClick={() => setIsOpen(false)}
                 title="Minimize"
-                className="p-1 text-slate-300 hover:text-white rounded-lg transition-colors"
+                className="p-1 text-[#6B7280] hover:text-[#111827] rounded-lg transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -137,7 +142,7 @@ export const FloatingAIAgent: React.FC<FloatingAIAgentProps> = ({
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#F8FAFC]">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#FAFAF8]">
             {messages.map((m) => (
               <div
                 key={m.id}
@@ -146,16 +151,16 @@ export const FloatingAIAgent: React.FC<FloatingAIAgentProps> = ({
                 <div
                   className={`max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed ${
                     m.role === 'user'
-                      ? 'bg-bis-600 text-white rounded-br-none'
-                      : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none shadow-sm'
+                      ? 'bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-white rounded-br-none shadow-xs font-medium'
+                      : 'bg-white text-[#1F2937] border border-[#E5C066]/35 rounded-bl-none shadow-xs'
                   }`}
                 >
                   <div className="whitespace-pre-wrap">{m.content}</div>
 
                   {m.sources && m.sources.length > 0 && (
-                    <div className="mt-2 pt-1.5 border-t border-slate-100 flex flex-wrap gap-1">
+                    <div className="mt-2 pt-1.5 border-t border-gray-100 flex flex-wrap gap-1">
                       {m.sources.slice(0, 2).map((s, i) => (
-                        <span key={i} className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-50 text-bis-700 border border-slate-200">
+                        <span key={i} className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#FEF9C3] text-[#996515] border border-[#D4AF37]/30">
                           {s.standardNumber || s.documentTitle}
                         </span>
                       ))}
@@ -166,8 +171,8 @@ export const FloatingAIAgent: React.FC<FloatingAIAgentProps> = ({
             ))}
 
             {loading && (
-              <div className="flex items-center gap-2 text-xs text-slate-500 bg-white p-2.5 rounded-xl border border-slate-200 max-w-[70%]">
-                <RefreshCw className="w-3 h-3 animate-spin text-bis-600" />
+              <div className="flex items-center gap-2 text-xs text-[#6B7280] bg-white p-2.5 rounded-xl border border-gray-200 max-w-[75%]">
+                <RefreshCw className="w-3 h-3 animate-spin text-[#C9A227]" />
                 <span>Grounding response...</span>
               </div>
             )}
@@ -175,12 +180,12 @@ export const FloatingAIAgent: React.FC<FloatingAIAgentProps> = ({
           </div>
 
           {/* Quick Prompts */}
-          <div className="px-3 py-1.5 bg-slate-50 border-t border-slate-200 flex gap-1.5 overflow-x-auto text-[10px]">
+          <div className="px-3 py-1.5 bg-white border-t border-gray-100 flex gap-1.5 overflow-x-auto text-[10px]">
             {quickChips.map((chip) => (
               <button
                 key={chip}
                 onClick={() => handleSend(chip)}
-                className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600 hover:bg-bis-50 hover:text-bis-700 shrink-0 transition-colors"
+                className="px-2 py-0.5 rounded-md bg-[#FAFAF8] border border-[#E5C066]/30 text-[#374151] hover:bg-[#FEF9C3] hover:text-[#996515] shrink-0 transition-colors cursor-pointer"
               >
                 {chip}
               </button>
@@ -188,7 +193,7 @@ export const FloatingAIAgent: React.FC<FloatingAIAgentProps> = ({
           </div>
 
           {/* Input Bar */}
-          <div className="p-3 bg-white border-t border-slate-200">
+          <div className="p-3 bg-white border-t border-[#D4AF37]/30">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -201,47 +206,49 @@ export const FloatingAIAgent: React.FC<FloatingAIAgentProps> = ({
                 value={inputQuery}
                 onChange={(e) => setInputQuery(e.target.value)}
                 placeholder="Ask BIS AI..."
-                className="flex-1 px-3 py-2 text-xs bg-slate-100 border border-slate-200 rounded-xl focus:bg-white focus:border-bis-600 outline-none"
+                className="flex-1 px-3 py-2 text-xs bg-[#FAFAF8] border border-[#D4AF37]/40 focus:border-[#C9A227] focus:bg-white rounded-xl text-[#111827] placeholder-[#9CA3AF] outline-none shadow-2xs"
               />
+
               {onOpenVoice && (
                 <button
                   type="button"
                   onClick={onOpenVoice}
                   title="Voice Input"
-                  className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors"
+                  className="p-2 rounded-xl bg-[#FEF9C3] border border-[#D4AF37]/40 text-[#996515] hover:bg-[#FEF08A] transition-colors cursor-pointer"
                 >
                   <Mic className="w-3.5 h-3.5" />
                 </button>
               )}
+
               <button
                 type="submit"
                 disabled={!inputQuery.trim() || loading}
-                className="p-2 bg-bis-600 hover:bg-bis-700 text-white rounded-xl transition-colors disabled:opacity-40"
+                className="p-2 rounded-xl btn-primary disabled:opacity-40 cursor-pointer"
               >
-                <Send className="w-3.5 h-3.5" />
+                <Send className="w-3.5 h-3.5 text-white" />
               </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* ===================== FLOATING ACTION BUTTON (FAB) ===================== */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="group flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-bis-600 to-cyan-600 hover:from-bis-700 hover:to-cyan-700 text-white rounded-full shadow-2xl shadow-bis-600/40 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20"
-      >
-        <div className="relative">
-          <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
-            <Bot className="w-4 h-4 text-white" />
-          </div>
-          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-bis-600 rounded-full animate-pulse" />
-        </div>
-
-        <div className="text-left hidden sm:block">
-          <div className="text-xs font-bold leading-tight">Ask BIS AI</div>
-          <div className="text-[10px] text-cyan-200 font-medium leading-none">Instant Assistant</div>
-        </div>
-      </button>
+      {/* ===================== FLOATING LAUNCHER BUTTON ===================== */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="relative group flex items-center justify-center w-14 h-14 rounded-2xl text-white transition-all shadow-xl hover:scale-105 active:scale-95 cursor-pointer"
+          style={{
+            background: 'linear-gradient(135deg, #D4AF37 0%, #B8860B 50%, #996515 100%)',
+            boxShadow: '0 8px 25px rgba(201, 162, 39, 0.4)'
+          }}
+        >
+          <Bot className="w-6 h-6 text-white" />
+          <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F5D77F] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#D4AF37]"></span>
+          </span>
+        </button>
+      )}
     </div>
   );
 };

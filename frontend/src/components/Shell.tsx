@@ -2,25 +2,23 @@ import React, { useState } from 'react';
 import { 
   LayoutDashboard, 
   Bot, 
-  ScanLine, 
   BookOpen, 
   Info, 
-  FileText, 
   Award, 
-  FlaskConical, 
-  CheckCircle2, 
+  GraduationCap, 
   Mic, 
-  Bell, 
-  Sparkles, 
-  Settings as SettingsIcon, 
-  ShieldAlert, 
   LogOut, 
   Search, 
   Globe, 
   Menu, 
   X,
-  ExternalLink,
-  ChevronDown
+  ChevronDown,
+  ChevronRight,
+  ShieldCheck,
+  Check,
+  Sparkles,
+  User,
+  ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage, LANGUAGES } from '../context/LanguageContext';
@@ -29,16 +27,11 @@ import { UserRole } from '../types';
 export type NavPage = 
   | 'dashboard'
   | 'ai-assistant'
-  | 'scan-product'
+  | 'standards'
   | 'natural-terms'
   | 'bis-info'
-  | 'documents'
-  | 'standards'
-  | 'laboratories'
-  | 'compliance'
-  | 'voice-assistant'
-  | 'alerts'
   | 'impact'
+  | 'voice-assistant'
   | 'settings'
   | 'admin';
 
@@ -55,38 +48,27 @@ export const Shell: React.FC<ShellProps> = ({
   children, 
   onOpenVoiceModal 
 }) => {
-  const { user, role, switchRole, logout, openAuthModal } = useAuth();
-  const { language, setLanguage, t } = useLanguage();
+  const { user, role, switchRole, logout } = useAuth();
+  const { language, setLanguage, t, currentLanguage } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'ai-assistant', label: 'AI BIS Assistant', icon: Bot, badge: 'AI' },
-    { id: 'scan-product', label: 'Scan Product', icon: ScanLine },
-    { id: 'natural-terms', label: 'Natural Terms', icon: BookOpen },
-    { id: 'bis-info', label: 'BIS Information', icon: Info },
-    { id: 'documents', label: 'Documents & Analysis', icon: FileText },
-    { id: 'standards', label: 'Standards Catalog', icon: Award },
-    { id: 'laboratories', label: 'Testing & Laboratories', icon: FlaskConical },
-    { id: 'compliance', label: 'Compliance Center', icon: CheckCircle2, badge: 'Roadmap' },
-    { id: 'voice-assistant', label: 'Voice Assistant', icon: Mic, isVoiceAction: true },
-    { id: 'alerts', label: 'Alerts & Updates', icon: Bell },
-    { id: 'impact', label: 'Impact & Benefits', icon: Sparkles },
-    { id: 'settings', label: 'Settings', icon: SettingsIcon },
+    { id: 'dashboard' as NavPage, label: t('overview') || 'Overview', icon: LayoutDashboard },
+    { id: 'ai-assistant' as NavPage, label: t('aiAssistant') || 'AI Assistant', icon: Bot, badge: 'AI' },
+    { id: 'standards' as NavPage, label: t('productStandards') || 'Product Standards', icon: Award },
+    { id: 'natural-terms' as NavPage, label: t('naturalTerms') || 'Natural Terms', icon: BookOpen },
+    { id: 'bis-info' as NavPage, label: t('bisInfo') || 'BIS Information', icon: Info },
+    { id: 'impact' as NavPage, label: t('standardsTraining') || 'Standards & Training', icon: GraduationCap },
   ];
 
-  if (role === 'ADMIN') {
-    navItems.push({ id: 'admin', label: 'Admin Command', icon: ShieldAlert, badge: 'Gov' });
-  }
-
-  const roleColors: Record<UserRole, { bg: string; text: string; border: string }> = {
-    CONSUMER: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
-    MANUFACTURER: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
-    STUDENT: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
-    ADMIN: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
+  const roleLabels: Record<UserRole, { title: string; subtitle: string; initials: string; badge: string }> = {
+    CONSUMER: { title: user?.name || 'Rahul Sharma', subtitle: 'Consumer / Citizen', initials: 'RS', badge: 'Citizen' },
+    MANUFACTURER: { title: user?.name || 'Vikramaditya Rao', subtitle: 'MSME Manufacturer', initials: 'VR', badge: 'MSME' },
+    STUDENT: { title: user?.name || 'Priya Nair', subtitle: 'Student / Researcher', initials: 'PN', badge: 'Research' },
+    ADMIN: { title: user?.name || 'Dr. K. S. Murthy', subtitle: 'BIS Admin Officer', initials: 'KM', badge: 'Gov' }
   };
 
   const handleGlobalSearch = (e: React.FormEvent) => {
@@ -97,304 +79,302 @@ export const Shell: React.FC<ShellProps> = ({
     }
   };
 
-  return (
-    <div className="flex h-screen overflow-hidden bg-[#F4F7FB]">
-      {/* ===================== DESKTOP SIDEBAR ===================== */}
-      <aside className="hidden lg:flex flex-col w-72 bg-[#0A2540] text-white border-r border-[#0D2E4E] z-30 shadow-xl select-none">
-        {/* Brand Header */}
-        <div className="h-16 px-6 flex items-center justify-between border-b border-[#143B63] bg-[#071D33]">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate('dashboard')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-bis-600 to-cyan-400 flex items-center justify-center shadow-md shadow-bis-600/30">
-              <Award className="w-6 h-6 text-white" />
+  const currentRoleInfo = roleLabels[role] || roleLabels.MANUFACTURER;
+
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full bg-[#0D282A] text-[#E1E8E8] select-none border-r border-[#153B3E]">
+      {/* ── Brand Header ─────────────────────────────── */}
+      <div 
+        className="px-5 py-5 border-b border-[#1A4447] cursor-pointer"
+        onClick={() => { onNavigate('dashboard'); setMobileMenuOpen(false); }}
+      >
+        <div className="flex items-center gap-3">
+          {/* Gold Logo Badge */}
+          <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#C99738] to-[#E0B45C] flex items-center justify-center text-[#0D282A] shadow-md shrink-0">
+            <ShieldCheck className="w-5 h-5 text-[#0D282A]" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-base tracking-tight text-white font-serif-heading">
+                SolveX
+              </span>
+              <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-[#C99738]/20 text-[#E0B45C] border border-[#C99738]/30">
+                BIS
+              </span>
             </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-xl tracking-tight font-sans text-white">SolveX</span>
-                <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
-                  National AI
-                </span>
+            <p className="text-[10px] text-[#8AA4A6] tracking-wider uppercase font-medium mt-0.5 truncate">
+              {t('portalSubtitle')}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Mode / Status Info Widget ───────────────── */}
+      <div className="px-4 py-3 border-b border-[#1A4447]">
+        <div className="bg-[#133437] border border-[#1E4D51] rounded-xl p-3 text-xs">
+          <div className="flex items-center gap-2 text-[#E0B45C] font-semibold text-[11px]">
+            <span className="w-2 h-2 rounded-full bg-[#E0B45C] animate-pulse" />
+            <span>AI Compliance Active</span>
+          </div>
+          <p className="text-[11px] text-[#A2BABB] mt-1 leading-relaxed">
+            Statutory guidance grounded in Gazette QCOs &amp; BIS standards.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Navigation Links ─────────────────────────── */}
+      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = currentPage === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => {
+                onNavigate(item.id);
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-left cursor-pointer ${
+                isActive
+                  ? 'bg-[#184245] text-white font-semibold shadow-xs border-l-3 border-[#C99738]'
+                  : 'text-[#9AB3B5] hover:bg-[#133639] hover:text-white'
+              }`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#E0B45C]' : 'text-[#7D999B]'}`} />
+                <span className="truncate">{item.label}</span>
               </div>
-              <p className="text-[11px] text-slate-400 font-medium truncate max-w-[150px]">
-                National BIS Standards & Compliance Assistant
+              {item.badge && (
+                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#C99738]/25 text-[#E0B45C] border border-[#C99738]/40">
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
+
+        {/* Voice Assistant Trigger */}
+        <button
+          onClick={() => {
+            onOpenVoiceModal();
+            setMobileMenuOpen(false);
+          }}
+          className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-[#9AB3B5] hover:bg-[#133639] hover:text-white transition-all text-left cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            <Mic className="w-4 h-4 text-[#E0B45C] shrink-0" />
+            <span>{t('voiceAssistant')}</span>
+          </div>
+          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            Voice
+          </span>
+        </button>
+      </div>
+
+      {/* ── Language Switcher in Sidebar ────────────── */}
+      <div className="px-3 pt-2 pb-1 border-t border-[#1A4447]">
+        <div className="relative">
+          <button
+            onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[#133437] hover:bg-[#184245] border border-[#1E4D51] text-xs text-[#E1E8E8] transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <Globe className="w-3.5 h-3.5 text-[#E0B45C]" />
+              <span className="font-medium">{currentLanguage.nativeLabel}</span>
+              <span className="text-[10px] text-[#8AA4A6]">({currentLanguage.label})</span>
+            </div>
+            <ChevronDown className={`w-3.5 h-3.5 text-[#8AA4A6] transition-transform ${langDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {langDropdownOpen && (
+            <div className="absolute bottom-full mb-1 left-0 right-0 bg-[#0F2D30] border border-[#1E4D51] rounded-xl shadow-xl z-50 p-1 space-y-0.5 max-h-56 overflow-y-auto">
+              <div className="px-2 py-1 text-[10px] font-bold text-[#8AA4A6] uppercase tracking-wider">
+                {t('selectLanguage')}
+              </div>
+              {LANGUAGES.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    setLanguage(lang.code);
+                    setLangDropdownOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left cursor-pointer transition-colors ${
+                    language === lang.code
+                      ? 'bg-[#184245] text-white font-bold'
+                      : 'text-[#B4C7C8] hover:bg-[#133639] hover:text-white'
+                  }`}
+                >
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-xs text-white">{lang.nativeLabel}</span>
+                    <span className="text-[10px] text-[#8AA4A6]">{lang.label} • {lang.region}</span>
+                  </div>
+                  {language === lang.code && <Check className="w-3.5 h-3.5 text-[#E0B45C]" />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── User Profile & Logout in Sidebar ────────── */}
+      <div className="p-3 border-t border-[#1A4447]">
+        <div className="flex items-center justify-between bg-[#133437] rounded-xl p-2.5 border border-[#1E4D51]">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-full bg-[#1A4B4E] border border-[#C99738]/50 text-[#E0B45C] font-bold text-xs flex items-center justify-center shrink-0">
+              {currentRoleInfo.initials}
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-white truncate">
+                {currentRoleInfo.title}
+              </p>
+              <p className="text-[10px] text-[#8AA4A6] truncate">
+                {currentRoleInfo.subtitle}
               </p>
             </div>
           </div>
+          <button
+            onClick={logout}
+            title={t('logout')}
+            className="p-1.5 text-[#8AA4A6] hover:text-rose-300 hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer shrink-0 ml-1"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
+      </div>
+    </div>
+  );
 
-        {/* Navigation Items */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-          <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-            Navigation Menu
-          </div>
-
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = currentPage === item.id;
-
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  if (item.isVoiceAction) {
-                    onOpenVoiceModal();
-                  } else {
-                    onNavigate(item.id as NavPage);
-                  }
-                }}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
-                  isActive
-                    ? 'bg-bis-600 text-white font-semibold shadow-md shadow-bis-600/30 translate-x-1'
-                    : 'text-slate-300 hover:bg-[#123659] hover:text-white'
-                }`}
-              >
-                <div className="flex items-center gap-3 truncate">
-                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                  <span className="truncate">{item.label}</span>
-                </div>
-                {item.badge && (
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-[#15426E] text-cyan-300'
-                  }`}>
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* User Role Card & Profile at bottom */}
-        <div className="p-3 border-t border-[#143B63] bg-[#071D33]/70">
-          <div className="p-2.5 rounded-xl bg-[#0D2E4E]/90 border border-slate-700/50 flex items-center justify-between">
-            <div className="flex items-center gap-2.5 truncate">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-bis-500 to-bis-700 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                {user?.name?.[0] || 'U'}
-              </div>
-              <div className="truncate">
-                <p className="text-xs font-semibold text-white truncate max-w-[120px]">{user?.name}</p>
-                <span className={`inline-block text-[10px] font-bold px-1.5 py-0.2 rounded border ${roleColors[role].bg} ${roleColors[role].text} ${roleColors[role].border}`}>
-                  {role}
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={logout}
-              title="Logout / Reset Session"
-              className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+  return (
+    <div className="min-h-screen flex bg-[#F7F8F5] text-[#192425]">
+      {/* Desktop Left Sidebar (Fixed 260px) */}
+      <aside className="hidden md:flex flex-col w-64 shrink-0 fixed inset-y-0 left-0 z-30 shadow-xl">
+        <SidebarContent />
       </aside>
 
-      {/* ===================== MAIN WRAPPER ===================== */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* ===================== TOP HEADER ===================== */}
-        <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between z-20 shrink-0 shadow-sm">
-          {/* Mobile menu trigger & title */}
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="relative w-72 max-w-[85vw] h-full z-10 shadow-2xl">
+            <SidebarContent />
+          </div>
+        </div>
+      )}
+
+      {/* ── Main Content Area ───────────────────────── */}
+      <div className="flex-1 flex flex-col md:pl-64 min-w-0">
+        {/* Top App Header */}
+        <header className="sticky top-0 z-20 bg-[#FFFFFF] border-b border-[#E2E6DF] px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100"
+              className="md:hidden p-2 text-[#5C6768] hover:bg-[#F3F4F0] rounded-xl cursor-pointer"
             >
               <Menu className="w-5 h-5" />
             </button>
-            
-            <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-slate-500">
-              <span className="font-bold text-bis-800">Bureau of Indian Standards</span>
-              <span>•</span>
-              <span className="text-slate-400 hidden md:inline">National Standards & Compliance Intelligence Portal</span>
+
+            {/* Breadcrumb / Top Path */}
+            <div className="hidden sm:flex items-center gap-2 text-xs text-[#5C6768]">
+              <span 
+                className="hover:text-[#113235] cursor-pointer font-medium"
+                onClick={() => onNavigate('dashboard')}
+              >
+                BIS Portal
+              </span>
+              <ChevronRight className="w-3.5 h-3.5 text-[#8B9798]" />
+              <span className="font-semibold text-[#113235] capitalize">
+                {t(currentPage === 'dashboard' ? 'overview' : currentPage) || currentPage}
+              </span>
             </div>
           </div>
 
-          {/* Center Global Search */}
-          <form onSubmit={handleGlobalSearch} className="hidden md:flex items-center flex-1 max-w-md mx-6">
-            <div className="relative w-full">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          {/* Center Search Bar */}
+          <form onSubmit={handleGlobalSearch} className="flex-1 max-w-lg mx-2 hidden md:block">
+            <div className="relative">
+              <Search className="w-4 h-4 text-[#8B9798] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search Indian Standards (IS), clauses, testing labs, or ask AI..."
-                className="w-full pl-10 pr-4 py-1.5 text-xs bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-transparent focus:border-bis-600 rounded-full outline-none transition-all"
+                placeholder={t('searchPlaceholder')}
+                className="w-full bg-[#F3F4F0] focus:bg-white text-xs text-[#192425] placeholder-[#8B9798] pl-9 pr-4 py-2 rounded-xl border border-[#E2E6DF] focus:border-[#113235] focus:outline-none focus:ring-2 focus:ring-[#113235]/10 transition-all"
               />
             </div>
           </form>
 
-          {/* Right Header Actions */}
+          {/* Right Header Controls */}
           <div className="flex items-center gap-2.5">
-            {/* Multilingual Selector */}
-            <div className="relative">
-              <button
-                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50"
-              >
-                <Globe className="w-3.5 h-3.5 text-bis-600" />
-                <span className="hidden sm:inline">
-                  {LANGUAGES.find(l => l.code === language)?.nativeLabel || 'Language'}
-                </span>
-                <ChevronDown className="w-3 h-3 text-slate-400" />
-              </button>
+            {/* Quick Voice Trigger */}
+            <button
+              onClick={onOpenVoiceModal}
+              className="p-2 text-[#5C6768] hover:text-[#113235] hover:bg-[#F3F4F0] rounded-xl transition-colors cursor-pointer"
+              title={t('voiceAssistant')}
+            >
+              <Mic className="w-4 h-4 text-[#C99738]" />
+            </button>
 
-              {langDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-xl border border-slate-100 py-1.5 z-50">
-                  <div className="px-3 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    Select Language
-                  </div>
-                  {LANGUAGES.map((l) => (
-                    <button
-                      key={l.code}
-                      onClick={() => {
-                        setLanguage(l.code);
-                        setLangDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between hover:bg-slate-50 ${
-                        language === l.code ? 'text-bis-600 font-bold bg-bis-50' : 'text-slate-700'
-                      }`}
-                    >
-                      <span>{l.nativeLabel}</span>
-                      <span className="text-[10px] text-slate-400 font-normal">{l.label}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Quick Role Switcher */}
+            {/* Persona Switcher Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${roleColors[role].bg} ${roleColors[role].text} ${roleColors[role].border}`}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#E2E6DF] hover:border-[#113235]/30 bg-[#FFFFFF] text-xs font-semibold text-[#192425] cursor-pointer transition-all shadow-2xs"
               >
-                <span>Role: {role}</span>
-                <ChevronDown className="w-3 h-3 opacity-60" />
+                <User className="w-3.5 h-3.5 text-[#C99738]" />
+                <span className="hidden sm:inline">{currentRoleInfo.badge}</span>
+                <ChevronDown className="w-3 h-3 text-[#8B9798]" />
               </button>
 
               {roleDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-slate-100 py-1.5 z-50">
-                  <div className="px-3 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    Switch Demo Persona
+                <div className="absolute right-0 mt-2 w-56 bg-white border border-[#E2E6DF] rounded-2xl shadow-xl z-50 p-1.5 space-y-1">
+                  <div className="px-3 py-1.5 text-[10px] font-bold text-[#8B9798] uppercase tracking-wider border-b border-gray-100">
+                    {t('switchRole')}
                   </div>
-                  {(['CONSUMER', 'MANUFACTURER', 'STUDENT', 'ADMIN'] as UserRole[]).map((r) => (
+                  {(['MANUFACTURER', 'ADMIN', 'CONSUMER', 'STUDENT'] as UserRole[]).map((r) => (
                     <button
                       key={r}
                       onClick={() => {
                         switchRole(r);
                         setRoleDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-slate-50 ${
-                        role === r ? 'font-bold text-bis-600 bg-bis-50' : 'text-slate-700'
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-left cursor-pointer transition-colors ${
+                        role === r ? 'bg-[#113235] text-white font-semibold' : 'text-[#192425] hover:bg-[#F3F4F0]'
                       }`}
                     >
-                      <div>
-                        <div className="font-semibold">{r}</div>
-                        <div className="text-[10px] text-slate-400">
-                          {r === 'CONSUMER' && 'Product scan & verification'}
-                          {r === 'MANUFACTURER' && 'Compliance roadmap & lab finder'}
-                          {r === 'STUDENT' && 'Clauses & standards research'}
-                          {r === 'ADMIN' && 'Management & analytics'}
-                        </div>
-                      </div>
+                      <span>{roleLabels[r].subtitle}</span>
+                      {role === r && <Check className="w-3.5 h-3.5 text-[#E0B45C]" />}
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Voice Assistant Quick Trigger */}
+            {/* Sign Out Button */}
             <button
-              onClick={onOpenVoiceModal}
-              title="Open Voice Assistant"
-              className="p-2 rounded-lg bg-cyan-50 text-cyan-700 border border-cyan-200 hover:bg-cyan-100 transition-colors"
+              onClick={logout}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50 border border-rose-200/80 rounded-xl transition-colors cursor-pointer"
             >
-              <Mic className="w-4 h-4" />
-            </button>
-
-            {/* Notifications Trigger */}
-            <button
-              onClick={() => onNavigate('alerts')}
-              title="BIS Gazette Alerts"
-              className="relative p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
-            >
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{t('logout')}</span>
             </button>
           </div>
         </header>
 
-        {/* ===================== MAIN CONTENT AREA ===================== */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto space-y-6">
-            {children}
-          </div>
+        {/* ── Main Workspace Body ─────────────────────── */}
+        <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
+          {children}
         </main>
-      </div>
 
-      {/* ===================== MOBILE SLIDE-OUT DRAWER ===================== */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 flex lg:hidden">
-          <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-
-          <div className="relative w-72 max-w-[80vw] bg-[#0A2540] text-white flex flex-col h-full z-10 shadow-2xl">
-            <div className="h-16 px-5 flex items-center justify-between border-b border-[#143B63]">
-              <div className="flex items-center gap-2">
-                <Award className="w-6 h-6 text-cyan-400" />
-                <span className="font-extrabold text-lg">SolveX</span>
-              </div>
-              <button onClick={() => setMobileMenuOpen(false)} className="p-1 text-slate-400 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-4 space-y-1.5">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = currentPage === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      if (item.isVoiceAction) {
-                        onOpenVoiceModal();
-                      } else {
-                        onNavigate(item.id as NavPage);
-                      }
-                    }}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm ${
-                      isActive ? 'bg-bis-600 text-white font-semibold' : 'text-slate-300 hover:bg-[#123659]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon className="w-4 h-4" />
-                      <span>{item.label}</span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="p-4 border-t border-[#143B63]">
-              <div className="text-xs text-slate-400 mb-2">Logged in as {user?.name}</div>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  logout();
-                }}
-                className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-red-600/20 text-red-300 text-xs font-semibold"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </button>
-            </div>
+        {/* ── Clean Footer ────────────────────────────── */}
+        <footer className="border-t border-[#E2E6DF] bg-white px-6 py-4 text-center text-xs text-[#8B9798]">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 max-w-7xl mx-auto">
+            <span>{t('officialDisclaimer')}</span>
+            <span>{t('allRightsReserved')}</span>
           </div>
-        </div>
-      )}
+        </footer>
+      </div>
     </div>
   );
 };
