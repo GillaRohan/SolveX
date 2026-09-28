@@ -1,4 +1,4 @@
-# 🚀 SolveX — AI POWERED INTELLIGENT ASSISTANT FOR INDIAN STANDARDS AND BIS SERVICES FOR INDUSTRIES AND CONSUMERS 
+# SolveX — AI POWERED INTELLIGENT ASSISTANT FOR INDIAN STANDARDS AND BIS SERVICES FOR INDUSTRIES AND CONSUMERS 
 ### AI-Powered Intelligent Assistant for Indian Standards & BIS Services for Industries and Consumers
 
 
@@ -10,7 +10,7 @@
 
 ---
 
-## 📌 1. Project Overview & SIH 2026 Problem Statement
+##  1. Project Overview & SIH 2026 Problem Statement
 
 * **Problem Statement ID:** 26107
 * **Title:** AI-Powered Intelligent Assistant for Indian Standards and BIS Services for Industries and Consumers
@@ -22,7 +22,7 @@
 
 ---
 
-## 🌟 2. Key Features & Innovations
+##  2. Key Features & Innovations
 
 1. **Conversational BIS AI Assistant:** Grounded multi-turn conversational AI with zero-hallucination domain knowledge, authoritative citations, and recommended next actions.
 2. **Smart Standard Recommendation Engine:** Translates natural-language product descriptions (e.g. *"I manufacture electric kettles"*) into exact Indian Standards (`IS 302-2-15`), mandatory QCO status, and testing parameters.
@@ -40,7 +40,7 @@
 
 ---
 
-## 🏗️ 3. System Architecture
+##  3. System Architecture
 
 ```
                        +---------------------------------------------------+
@@ -71,7 +71,7 @@
 
 ---
 
-## 💻 4. Technology Stack
+##  4. Technology Stack
 
 * **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, Lucide React, Canvas Confetti, Web Speech API, WebRTC MediaDevices API.
 * **Backend:** Node.js, Express, TypeScript, Multer, Bcrypt, JSON Web Tokens (JWT), CORS.
@@ -80,7 +80,7 @@
 
 ---
 
-## ⚡ 5. Getting Started Locally
+##  5. Getting Started Locally
 
 ### Prerequisites
 * Node.js v18+ (tested on v18.20.8)
@@ -132,7 +132,7 @@ Open `http://localhost:5173` in your browser.
 
 ---
 
-## 🔑 6. Demo Accounts & One-Click Logins
+##  6. Demo Accounts & One-Click Logins
 
 SolveX provides instantaneous **1-Click Demo Login** directly from the UI header and login modal without typing passwords:
 
@@ -145,7 +145,7 @@ SolveX provides instantaneous **1-Click Demo Login** directly from the UI header
 
 ---
 
-## 🎯 7. End-to-End Demo Scenarios
+##  7. End-to-End Demo Scenarios
 
 ### Demo Scenario 1: MSME Manufacturer Compliance Journey ⭐⭐⭐
 1. Select role **Manufacturer** from the header dropdown.
@@ -177,7 +177,7 @@ SolveX provides instantaneous **1-Click Demo Login** directly from the UI header
 
 ---
 
-## 🛡️ 8. Security & Compliance Architecture
+##  8. Security & Compliance Architecture
 
 * **Authentication:** Signed JSON Web Tokens (JWT) with configurable expiration.
 * **Role-Based Access Control (RBAC):** Middleware protecting `/api/admin/*` and user workspaces.
@@ -187,7 +187,7 @@ SolveX provides instantaneous **1-Click Demo Login** directly from the UI header
 
 ---
 
-## 🚀 9. Production Deployment
+##  9. Production Deployment
 
 ### Backend (Render / AWS / Railway / Cloud Run)
 1. Configure environment variables (`DATABASE_URL`, `JWT_SECRET`, `NODE_ENV=production`, `PORT`).
